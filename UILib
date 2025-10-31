@@ -37,10 +37,7 @@ local PROTEIN_EGG_INTERVAL = 30 * 60
 local REPS_PER_CYCLE = 250
 local BURST_SIZE = 15
 local ROCK_INTERVAL = 1
-local BASE_DELAY = 0.0008
-local MAX_DELAY = 0.004
-local MIN_DELAY = 0.0004
-local TARGET_PING = 70
+local MAX_PING = 1100
 
 local HumanoidRootPart
 local lastProteinEggTime = 0
