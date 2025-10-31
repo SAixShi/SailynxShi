@@ -55,14 +55,14 @@ local function getDelay()
 	local ping = getPing()
 	if ping < 200 then
 		return 0.0005
-	elseif ping < 500 then
+	elseif ping < 400 then
+		return 0.001
+	elseif ping < 800 then
 		return 0.002
-	elseif ping < 900 then
-		return 0.004
 	elseif ping < MAX_PING then
-		return 0.008
+		return 0.004
 	else
-		return 0.01
+		return 0.008
 	end
 end
 
@@ -121,10 +121,15 @@ if not getgenv()._AutoRepFarmLoop then
 					task.wait(5)
 				else
 					if LocalPlayer:FindFirstChild("muscleEvent") then
-						for i = 1, REPS_PER_CYCLE do
-							pcall(function()
-								LocalPlayer.muscleEvent:FireServer("rep")
-							end)
+						for i = 1, REPS_PER_CYCLE, BURST_SIZE do
+							for j = 1, BURST_SIZE do
+								task.spawn(function()
+									pcall(function()
+										LocalPlayer.muscleEvent:FireServer("rep")
+									end)
+								end)
+							end
+							task.wait(0.001)
 						end
 					end
 
