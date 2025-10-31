@@ -506,6 +506,42 @@ end)
 -- ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€™ FOLDER REBIRTH (Ordenado con Anti AFK antes de Anti Lag)
 local RebirthFolder = AutoFarm:AddFolder("OP Rebirth")
 
+local player = game.Players.LocalPlayer
+local leaderstats = player:WaitForChild("leaderstats")
+local rebirthsStat = leaderstats:WaitForChild("Rebirths")
+
+local startTime = tick()
+local sessionRebirths = rebirthsStat.Value
+
+local timeLabel = RebirthFolder:AddLabel("Time")
+timeLabel.TextSize = 26
+timeLabel.Font = Enum.Font.PatrickHand
+
+local stopwatchLabel = RebirthFolder:AddLabel("0d 0h 0m 0s")
+stopwatchLabel.TextSize = 26
+stopwatchLabel.Font = Enum.Font.PatrickHand
+
+RebirthFolder:AddLabel("").TextSize = 10
+
+local gainedLabel = RebirthFolder:AddLabel("Gained Rebirths: 0")
+gainedLabel.TextSize = 26
+gainedLabel.Font = Enum.Font.PatrickHand
+
+task.spawn(function()
+    while task.wait(1) do
+        local elapsed = tick() - startTime
+        local days = math.floor(elapsed / 86400)
+        local hours = math.floor((elapsed % 86400) / 3600)
+        local minutes = math.floor((elapsed % 3600) / 60)
+        local seconds = math.floor(elapsed % 60)
+        stopwatchLabel.Text = string.format("%dd %dh %dm %ds", days, hours, minutes, seconds)
+
+        local gainedRebirths = rebirthsStat.Value - sessionRebirths
+        gainedLabel.Text = "Gained Rebirths: " .. tostring(gainedRebirths)
+    end
+end)
+
+
 -- ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â Fast Rebirths
 RebirthFolder:AddSwitch("Fast Rebirths", function(state)
     getgenv().AutoFarming = state
