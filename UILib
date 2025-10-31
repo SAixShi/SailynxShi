@@ -2,7 +2,7 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 
--- CARGA DE LIBRERÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂA
+-- CARGA DE LIBRERÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂA
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/memejames/elerium-v2-ui-library/main/Library", true))()
 
 -- VENTANA PRINCIPAL
@@ -16,32 +16,38 @@ local AutoFarm = window:AddTab("Farm OP")
 AutoFarm:Show()
 
 
--- 1ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ¢Ã†â€™Ã‚Â£ Switch: Fuerza OP
+-- 1ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢Ãƒâ€ Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â£ Switch: Fuerza OP
 AutoFarm:AddSwitch("OP STRENGTH", function(state)
     getgenv()._AutoRepFarmEnabled = state
     warn("[Auto Rep Farm] Estado cambiado a:", state and "ON" or "OFF")
 end)
 
--- ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ ConfiguraciÃƒÆ’Ã‚Â³n optimizada
+-- ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ ConfiguraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n optimizada
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
-local Workspace = game:GetService("Workspace")
-
+local Stats = game:GetService("Stats")
 local LocalPlayer = Players.LocalPlayer
 
 local PET_NAME = "Swift Samurai"
 local ROCK_NAME = "Rock5M"
 local PROTEIN_EGG_NAME = "ProteinEgg"
-local PROTEIN_EGG_INTERVAL = 30 * 60
-local REPS_PER_CYCLE = 500
-local BURST_SIZE = 15
+local PROTEIN_EGG_INTERVAL = 30 * 60 -- 30 min
+local REPS_PER_CYCLE = 250
+local REP_DELAY = 0.003
 local ROCK_INTERVAL = 1
-local BURZE_SIZE = 15
+local MAX_PING = 1100
 
 local HumanoidRootPart
 local lastProteinEggTime = 0
 local lastRockTime = 0
-local RockRef = Workspace:FindFirstChild(ROCK_NAME)
+local RockRef = workspace:FindFirstChild(ROCK_NAME)
+
+local function getPing()
+    local success, ping = pcall(function()
+        return Stats.Network.ServerStatsItem["Data Ping"]:GetValue()
+    end)
+    return success and ping or 999
+end
 
 local function updateCharacterRefs()
     local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -73,14 +79,15 @@ end
 
 local function hitRock()
     if not RockRef or not RockRef.Parent then
-        RockRef = Workspace:FindFirstChild(ROCK_NAME)
+        RockRef = workspace:FindFirstChild(ROCK_NAME)
     end
     if RockRef and HumanoidRootPart then
-        HumanoidRootPart.CFrame = RockRef.CFrame * CFrame.new(0, 0, -(5 + BURZE_SIZE))
+        HumanoidRootPart.CFrame = RockRef.CFrame * CFrame.new(0, 0, -5)
         ReplicatedStorage.rEvents.hitEvent:FireServer("hit", RockRef)
     end
 end
 
+-- ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loop principal
 if not getgenv()._AutoRepFarmLoop then
     getgenv()._AutoRepFarmLoop = true
 
@@ -92,31 +99,29 @@ if not getgenv()._AutoRepFarmLoop then
 
         while true do
             if getgenv()._AutoRepFarmEnabled then
-                -- Rapid strength training nonstop
-                if LocalPlayer:FindFirstChild("muscleEvent") then
-                    for i = 1, REPS_PER_CYCLE, BURST_SIZE do
-                        for j = 1, BURST_SIZE do
-                            task.spawn(function()
-                                pcall(function()
-                                    LocalPlayer.muscleEvent:FireServer("rep")
-                                end)
-                            end)
+                local ping = getPing()
+                if ping > MAX_PING then
+                    warn("[Auto Rep Farm] Ping alto ("..math.floor(ping).."ms), pausando 5s...")
+                    task.wait(5)
+                else
+                    if LocalPlayer:FindFirstChild("muscleEvent") then
+                        for i = 1, REPS_PER_CYCLE do
+                            LocalPlayer.muscleEvent:FireServer("rep")
                         end
-                        task.wait(0.0001)
                     end
-                end
 
-                if tick() - lastProteinEggTime >= PROTEIN_EGG_INTERVAL then
-                    eatProteinEgg()
-                    lastProteinEggTime = tick()
-                end
+                    if tick() - lastProteinEggTime >= PROTEIN_EGG_INTERVAL then
+                        eatProteinEgg()
+                        lastProteinEggTime = tick()
+                    end
 
-                if tick() - lastRockTime >= ROCK_INTERVAL then
-                    hitRock()
-                    lastRockTime = tick()
-                end
+                    if tick() - lastRockTime >= ROCK_INTERVAL then
+                        hitRock()
+                        lastRockTime = tick()
+                    end
 
-                task.wait(0.0001) -- minimal delay, ultra turbo mode
+                    task.wait(REP_DELAY)
+                end
             else
                 task.wait(1)
             end
@@ -126,7 +131,7 @@ end
 
 
 
--- 2ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ¢Ã†â€™Ã‚Â£ Switch: Eat Egg (30 Min)
+-- 2ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢Ãƒâ€ Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â£ Switch: Eat Egg (30 Min)
 local autoEatEnabled = false
 local function eatProteinEggNew()
     local player = game.Players.LocalPlayer
@@ -141,7 +146,7 @@ local function eatProteinEggNew()
         end)
         print("[AutoEgg] Protein Egg consumido.")
     else
-        warn("[AutoEgg] No se encontrÃƒÆ’Ã‚Â³ Protein Egg en Backpack.")
+        warn("[AutoEgg] No se encontrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³ Protein Egg en Backpack.")
     end
 end
 
@@ -162,7 +167,7 @@ AutoFarm:AddSwitch("Eat Egg (30 Min)", function(state)
 end)
 
 
--- 4ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ¢Ã†â€™Ã‚Â£ Switch: Anti Lag
+-- 4ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢Ãƒâ€ Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â£ Switch: Anti Lag
 AutoFarm:AddSwitch("Anti Lag", function(State)
     local lighting = game:GetService("Lighting")
     if State then
@@ -205,10 +210,10 @@ AutoFarm:AddSwitch("Anti Lag", function(State)
 end)
 
 
--- ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â¹ SWITCH PARA ACTIVAR/DESACTIVAR EL ANTI AFK
+-- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒâ€šÃ‚Â¹ SWITCH PARA ACTIVAR/DESACTIVAR EL ANTI AFK
 AutoFarm:AddSwitch("Anti AFK", function(state)
     if state then
-        -- ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ ACTIVAR ANTI AFK
+        -- ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ ACTIVAR ANTI AFK
         if getgenv().AntiAfkExecuted and thisoneissocoldww then 
             getgenv().AntiAfkExecuted = false
             getgenv().zamanbaslaticisi = false
@@ -261,7 +266,7 @@ AutoFarm:AddSwitch("Anti AFK", function(state)
         uselesslabelone.Position = UDim2.new(0.3,0,0,0)
         uselesslabelone.Size = UDim2.new(0,95,0,24)
         uselesslabelone.Font = Enum.Font.SourceSans
-        uselesslabelone.Text = "Anti Afk sacado de chat gpt de rafaelÃƒÂ°Ã…Â¸Ã‹Å“Ã¢â‚¬Å¡"
+        uselesslabelone.Text = "Anti Afk sacado de chat gpt de rafaelÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¹Ã…â€œÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡"
         uselesslabelone.TextColor3 = Color3.fromRGB(255,255,255)
         uselesslabelone.TextSize = 14
 
@@ -327,7 +332,7 @@ AutoFarm:AddSwitch("Anti AFK", function(state)
         uselesslabelfour.TextColor3 = Color3.fromRGB(255,255,255)
         uselesslabelfour.TextSize = 14
 
-        -- ÃƒÂ°Ã…Â¸Ã‚Â§Ã‚Â² Draggable UI
+        -- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€šÃ‚Â§Ãƒâ€šÃ‚Â² Draggable UI
         local Drag = madebybloodofbatus
         local gsTween = game:GetService("TweenService")
         local UserInputService = game:GetService("UserInputService")
@@ -358,14 +363,14 @@ AutoFarm:AddSwitch("Anti AFK", function(state)
             if input == dragInput and dragging then update(input) end
         end)
 
-        -- ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â¤ Anti-AFK Core
+        -- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢Ãƒâ€šÃ‚Â¤ Anti-AFK Core
         local vu = game:GetService('VirtualUser')
         game.Players.LocalPlayer.Idled:Connect(function()
             vu:CaptureController()
             vu:ClickButton2(Vector2.new())
         end)
 
-        -- ÃƒÂ¢Ã…Â¡Ã‚Â¡ FPS & Ping
+        -- ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡Ãƒâ€šÃ‚Â¡ FPS & Ping
         local RunService = game:GetService("RunService")
         local sec = tick()
         local FPS = {}
@@ -385,7 +390,7 @@ AutoFarm:AddSwitch("Anti AFK", function(state)
             end
         end)
 
-        -- ÃƒÂ¢Ã‚ÂÃ‚Â±ÃƒÂ¯Ã‚Â¸Ã‚Â Timer
+        -- ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€šÃ‚Â±ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â Timer
         local saniye, dakika, saat = 0,0,0
         getgenv().zamanbaslaticisi = true
         spawn(function()
@@ -398,7 +403,7 @@ AutoFarm:AddSwitch("Anti AFK", function(state)
             end
         end)
     else
-        -- ÃƒÂ¢Ã‚ÂÃ…â€™ DESACTIVAR ANTI AFK
+        -- ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ DESACTIVAR ANTI AFK
         getgenv().AntiAfkExecuted = false
         getgenv().zamanbaslaticisi = false
         if game.CoreGui:FindFirstChild("thisoneissocoldww") then
@@ -408,7 +413,7 @@ AutoFarm:AddSwitch("Anti AFK", function(state)
 end)
 
 
--- ÃƒÂ°Ã…Â¸Ã¢â‚¬â€œÃ‚Â¼ÃƒÂ¯Ã‚Â¸Ã‚Â Hide All Frames
+-- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“Ãƒâ€šÃ‚Â¼ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â Hide All Frames
 AutoFarm:AddSwitch("Hide All Frames", function(bool)
     local rSto = game:GetService("ReplicatedStorage")
     for _, obj in pairs(rSto:GetChildren()) do
@@ -419,7 +424,7 @@ AutoFarm:AddSwitch("Hide All Frames", function(bool)
 end)
 
 
--- ÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â° BotÃƒÆ’Ã‚Â³n: Girar Ruleta
+-- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½Ãƒâ€šÃ‚Â° BotÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n: Girar Ruleta
 AutoFarm:AddButton("Auto Spin", function(state)
     _G.AutoSpinWheel = state
     
@@ -437,7 +442,7 @@ end)
 
 
 AutoFarm:AddButton("Equip Swift Samurai", function()
-    print("BotÃƒÆ’Ã‚Â³n presionado: equipando 8 Swift Samurai")
+    print("BotÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n presionado: equipando 8 Swift Samurai")
 
     local LocalPlayer = game:GetService("Players").LocalPlayer
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -455,7 +460,7 @@ AutoFarm:AddButton("Equip Swift Samurai", function()
     end
     task.wait(0.1)
 
-    -- Ahora equipamos mÃƒÆ’Ã‚Â¡ximo 8 "Swift Samurai"
+    -- Ahora equipamos mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ximo 8 "Swift Samurai"
     local equipped = 0
     local maxEquip = 8
     for _, folder in pairs(petsFolder:GetChildren()) do
@@ -478,7 +483,7 @@ AutoFarm:AddButton("Equip Swift Samurai", function()
 end)
 
 
--- ÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â® BotÃƒÆ’Ã‚Â³n: Jungle Squat
+-- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½Ãƒâ€šÃ‚Â® BotÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n: Jungle Squat
 AutoFarm:AddButton("Jungle Squat", function()
     local char = LocalPlayer.Character
     if char and char:FindFirstChild("HumanoidRootPart") then
@@ -491,14 +496,14 @@ AutoFarm:AddButton("Jungle Squat", function()
                 game:GetService("ReplicatedStorage").rEvents.machineInteractRemote:InvokeServer("useMachine", seat)
             end
         end
-        print("[Jungle Squat] AcciÃƒÆ’Ã‚Â³n ejecutada.")
+        print("[Jungle Squat] AcciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n ejecutada.")
     else
         warn("[Jungle Squat] Personaje no encontrado o no tiene HumanoidRootPart.")
     end
 end)
 
 
--- ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€™ FOLDER REBIRTH (Ordenado con Anti AFK antes de Anti Lag)
+-- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã¢â‚¬â„¢ FOLDER REBIRTH (Ordenado con Anti AFK antes de Anti Lag)
 local RebirthFolder = AutoFarm:AddFolder("OP Rebirth")
 
 local player = game.Players.LocalPlayer
@@ -537,7 +542,7 @@ task.spawn(function()
 end)
 
 
--- ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â Fast Rebirths
+-- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒâ€šÃ‚Â Fast Rebirths
 RebirthFolder:AddSwitch("Fast Rebirths", function(state)
     getgenv().AutoFarming = state
     if state then
@@ -610,7 +615,7 @@ RebirthFolder:AddSwitch("Fast Rebirths", function(state)
     end
 end)
 
--- ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬â„¢ Lock Position
+-- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Lock Position
 RebirthFolder:AddSwitch("Lock Position", function(Value)
     if Value then
         local currentPos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
@@ -627,7 +632,7 @@ RebirthFolder:AddSwitch("Lock Position", function(Value)
     end
 end)
 
--- ÃƒÂ°Ã…Â¸Ã…Â¡Ã¢â€šÂ¬ Anti Lag
+-- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â¡ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Anti Lag
 RebirthFolder:AddButton("Anti Lag", function()
     for _, v in pairs(game:GetDescendants()) do
         if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
@@ -667,7 +672,7 @@ RebirthFolder:AddButton("Anti Lag", function()
     })
 end)
 
--- ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¢ Jungle Lift (Nuevo)
+-- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â¸Ãƒâ€šÃ‚Â¢ Jungle Lift (Nuevo)
 RebirthFolder:AddButton("Jungle Lift", function()
     local player = game.Players.LocalPlayer
     local char = player.Character or player.CharacterAdded:Wait()
@@ -689,7 +694,7 @@ AutoFarm:AddLabel("Farm Whiteout Packs")
 local autoEquipToolsFolder = AutoFarm:AddFolder("Auto Tools")
 
 
--- ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ ConfiguraciÃƒÆ’Ã‚Â³n optimizada
+-- ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ ConfiguraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n optimizada
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Stats = game:GetService("Stats")
@@ -754,7 +759,7 @@ local function hitRock()
     end
 end
 
--- ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Loop principal
+-- ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loop principal
 if not getgenv()._AutoRepFarmLoop then
     getgenv()._AutoRepFarmLoop = true
 
@@ -797,7 +802,7 @@ if not getgenv()._AutoRepFarmLoop then
 end
 
 
--- BotÃƒÆ’Ã‚Â³n para desbloquear el Gamepass AutoLift
+-- BotÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n para desbloquear el Gamepass AutoLift
 autoEquipToolsFolder:AddButton("Gamepass AutoLift", function()
     local gamepassFolder = game:GetService("ReplicatedStorage").gamepassIds
     local player = game:GetService("Players").LocalPlayer
@@ -809,7 +814,7 @@ autoEquipToolsFolder:AddButton("Gamepass AutoLift", function()
     end
 end)
 
--- FunciÃƒÆ’Ã‚Â³n para crear switches de auto-equip
+-- FunciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n para crear switches de auto-equip
 local function createAutoToolSwitch(toolName, globalVar)
     autoEquipToolsFolder:AddSwitch("Auto " .. toolName, function(Value)
         _G[globalVar] = Value
@@ -917,7 +922,7 @@ autoEquipToolsFolder:AddSwitch("Fast Tools", function(Value)
 end)
 
 
--- ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€™ NUEVO FOLDER ROCKS
+-- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã¢â‚¬â„¢ NUEVO FOLDER ROCKS
 
 local folder = AutoFarm:AddFolder("Rock Farming")
  
@@ -1318,8 +1323,8 @@ rebirthsFolder:AddTextBox("Rebirth Target", function(text)
         })
     else
         game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Entrada InvÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lida",
-            Text = "Por favor ingresa un nÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºmero vÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lido mayor que 0",
+            Title = "Entrada InvÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡lida",
+            Text = "Por favor ingresa un nÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âºmero vÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡lido mayor que 0",
             Duration = 0
         })
     end
@@ -1348,7 +1353,7 @@ local targetSwitch = rebirthsFolder:AddSwitch("Auto Rebirth Target", function(bo
                     _G.targetRebirthActive = false
                     
                     game:GetService("StarterGui"):SetCore("SendNotification", {
-                        Title = "ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡Objetivo Alcanzado!",
+                        Title = "ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡Objetivo Alcanzado!",
                         Text = "Has alcanzado " .. tostring(targetRebirthValue) .. " renacimientos",
                         Duration = 5
                     })
@@ -1360,7 +1365,7 @@ local targetSwitch = rebirthsFolder:AddSwitch("Auto Rebirth Target", function(bo
             end
         end)
     end
-end, "Renacimiento automÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡tico hasta alcanzar el objetivo")
+end, "Renacimiento automÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡tico hasta alcanzar el objetivo")
 
 infiniteSwitch = rebirthsFolder:AddSwitch("Auto Rebirth (Infinite)", function(bool)
     _G.infiniteRebirthActive = bool
@@ -1391,7 +1396,7 @@ local sizeSwitch = rebirthsFolder:AddSwitch("Auto Size 1", function(bool)
             end
         end)
     end
-end, "Establece el tamaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±o del personaje a 1 continuamente")
+end, "Establece el tamaÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±o del personaje a 1 continuamente")
 
 local teleportSwitch = rebirthsFolder:AddSwitch("Auto Teleport to Muscle King", function(bool)
     _G.teleportActive = bool
@@ -1405,7 +1410,7 @@ local teleportSwitch = rebirthsFolder:AddSwitch("Auto Teleport to Muscle King", 
             end
         end)
     end
-end, "Teletransporte continuo al Rey MÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºsculo")
+end, "Teletransporte continuo al Rey MÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âºsculo")
 
 
 
@@ -1430,11 +1435,11 @@ local timeDropdown = AutoFarm:AddDropdown("Change Time", function(selection)
     Lighting.FogEnd = 100000
     Lighting.Ambient = Color3.fromRGB(127,127,127)
 
-    if selection == "MaÃƒÂ±ana" then
+    if selection == "MaÃƒÆ’Ã‚Â±ana" then
         Lighting.ClockTime = 6
         Lighting.Brightness = 2
         Lighting.Ambient = Color3.fromRGB(200, 200, 255)
-    elseif selection == "MediodÃƒÂ­a" then
+    elseif selection == "MediodÃƒÆ’Ã‚Â­a" then
         Lighting.ClockTime = 12
         Lighting.Brightness = 3
         Lighting.Ambient = Color3.fromRGB(255, 255, 255)
@@ -1468,7 +1473,7 @@ local timeDropdown = AutoFarm:AddDropdown("Change Time", function(selection)
     end
 end)
 
--- ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…  NUEVA PESTAÃƒÆ’Ã¢â‚¬ËœA: CALCULAR STATS
+-- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦  NUEVA PESTAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“A: CALCULAR STATS
 local features = window:AddTab("Stats Farm")
 
 
@@ -1783,7 +1788,7 @@ Killer:AddButton("NaN Size", function()
     local args = {"changeSize", 0/0}
     game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("changeSpeedSizeRemote"):InvokeServer(unpack(args))
 end)
--- ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€œ Lista de RAWs a ejecutar
+-- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã¢â‚¬Å“ Lista de RAWs a ejecutar
 local urls = {
     "https://raw.githubusercontent.com/SadOz8/Stuffs/refs/heads/main/Crack",
     "https://raw.githubusercontent.com/SadOz8/Stuffs/refs/heads/main/Crack2",
@@ -2056,13 +2061,13 @@ Killer:AddSwitch("God Mode", function(State)
         end)
     end
 end)
--- ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€™ Teleport / Follow System (versiÃƒÆ’Ã‚Â³n auto-follow desde Dropdown)
+-- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã¢â‚¬â„¢ Teleport / Follow System (versiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n auto-follow desde Dropdown)
 
--- ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€™ Auto Follow (TP detrÃƒÆ’Ã‚Â¡s del jugador en vez de caminar)
+-- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã¢â‚¬â„¢ Auto Follow (TP detrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s del jugador en vez de caminar)
 local following = false
 local followTarget = nil
 
--- FunciÃƒÆ’Ã‚Â³n auxiliar: TP detrÃƒÆ’Ã‚Â¡s del jugador
+-- FunciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n auxiliar: TP detrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s del jugador
 function followPlayer(targetPlayer)
     local myChar = LocalPlayer.Character
     local targetChar = targetPlayer.Character
@@ -2072,14 +2077,14 @@ function followPlayer(targetPlayer)
     local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
 
     if myHRP and targetHRP then
-        -- ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€™ Calcular posiciÃƒÆ’Ã‚Â³n detrÃƒÆ’Ã‚Â¡s del jugador (3 studs atrÃƒÆ’Ã‚Â¡s)
+        -- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã¢â‚¬â„¢ Calcular posiciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n detrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s del jugador (3 studs atrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s)
         local followPos = targetHRP.Position - (targetHRP.CFrame.LookVector * 3)
-        -- ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€™ Teletransportar siempre recto
+        -- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã¢â‚¬â„¢ Teletransportar siempre recto
         myHRP.CFrame = CFrame.new(followPos, targetHRP.Position)
     end
 end
 
--- Dropdown dinÃƒÆ’Ã‚Â¡mico de jugadores
+-- Dropdown dinÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡mico de jugadores
 local followDropdown = Killer:AddDropdown("Follow Player(TP)", function(selected)
     if selected and selected ~= "" then
         local target = Players:FindFirstChild(selected)
@@ -2121,14 +2126,14 @@ Players.PlayerRemoving:Connect(function(player)
     end
 end)
 
--- BotÃƒÆ’Ã‚Â³n para dejar de seguir
+-- BotÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n para dejar de seguir
 Killer:AddButton("Unfollow", function()
     following = false
     followTarget = nil
     print("Stopped following")
 end)
 
--- Loop de seguimiento automÃƒÆ’Ã‚Â¡tico
+-- Loop de seguimiento automÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡tico
 task.spawn(function()
     while true do
         task.wait(0.2) -- cada 0.2s para actualizar TP
@@ -2172,7 +2177,7 @@ Killer:AddSwitch("Damage With Godmode", function(state)
                     groundSlam:Activate()
                 end
 
-                task.wait(0.1) -- delay pequeÃƒÆ’Ã‚Â±o
+                task.wait(0.1) -- delay pequeÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±o
             end
         end)
     end
@@ -3568,7 +3573,7 @@ local button = Killer:AddButton("freeze Water", function()
     WalkPart.Size = Vector3.new(20000,0,20000)
 end)
 
--- ÃƒÂ¢Ã…Â¡Ã‚Â¡ BotÃƒÆ’Ã‚Â³n que ejecuta todos los scripts remotos
+-- ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡Ãƒâ€šÃ‚Â¡ BotÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n que ejecuta todos los scripts remotos
 Killer:AddButton("Stick Dead", function()
     for _, url in ipairs(urls) do
         spawn(function()
@@ -3589,7 +3594,7 @@ Killer:AddButton("Stick Dead", function()
     end
 end)
 
--- Agregar opciones al dropdown dinÃƒÆ’Ã‚Â¡micamente
+-- Agregar opciones al dropdown dinÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡micamente
 for _, option in ipairs(timeOptions) do
     timeDropdown:Add(option)
 end
@@ -3694,7 +3699,7 @@ task.spawn(function()
                 if player:FindFirstChild("currentMap") then
                     Update9.Text = "Current Map: " .. tostring(player.currentMap.Value)
                 else
-                    Update9.Text = "Current Map: Aucune donnÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬ ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬ ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©e"
+                    Update9.Text = "Current Map: Aucune donnÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬ ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬ ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬ ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©e"
                 end
             end
         end
@@ -4257,7 +4262,7 @@ local function updateItemCount()
         for _, item in ipairs(backpack:GetChildren()) do
             if item.Name == "Protein Egg" then
                 proteinEggCount = proteinEggCount + 1
-            elseif item.Name == "Tropical Shake" or item.Name == "PiÃƒÆ’Ã‚Â±as" then
+            elseif item.Name == "Tropical Shake" or item.Name == "PiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as" then
                 tropicalShakeCount = tropicalShakeCount + 1
             end
         end
@@ -4344,9 +4349,9 @@ local Credits = window:AddTab("Credits")
 
 Credits:AddLabel("Made by ⚡SailynnxShi⚡")
 Credits:AddLabel("Sai ❤️ Arvelyn")
-Credits:AddLabel("🔥H3LL_KYY🔥¥")
+Credits:AddLabel("🔥H3LL_KYY🔥")
 Credits:AddLabel("YOSHIROSHIBOLxBer")
 Credits:AddLabel("SenXd")
 Credits:AddLabel("K13 Clan On Top")
 Credits:AddLabel("H3LL Clan On Top") 
-Credits:AddLabel("TANG INA NYO MGA BASURANG BINGOT 300💲 LANG TONG SCRIPT")
+Credits:AddLabel("TANG INA NYO MGA BASURANG BINGOT 300💲’² LANG TONG SCRIPT")
