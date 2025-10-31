@@ -506,9 +506,6 @@ end)
 -- ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€™ FOLDER REBIRTH (Ordenado con Anti AFK antes de Anti Lag)
 local RebirthFolder = AutoFarm:AddFolder("OP Rebirth")
 
-local RebirthFolder = AutoFarm:AddFolder("Stats")
-features:Show()
-
 local player = game.Players.LocalPlayer
 local leaderstats = player:WaitForChild("leaderstats")
 local strengthStat = leaderstats:WaitForChild("Strength")
@@ -530,7 +527,7 @@ local stopwatchLabel = AutoFarm:AddFolder("0d 0h 0m 0s")
 stopwatchLabel.TextSize = 20
 stopwatchLabel.Font = Enum.Font.PatrickHand
 
-features:AddLabel("").TextSize = 10
+RebirthFolder:AddFolder("").TextSize = 10
 
 local statsLabel = AutoFarm:AddFolder("Stats")
 statsLabel.TextSize = 24
@@ -551,7 +548,7 @@ local sessionStrength = strengthStat.Value
 local sessionDurability = durabilityStat.Value
 local sessionRebirths = rebirthsStat.Value
 
-features:AddLabel("").TextSize = 10
+features:AddFolder("").TextSize = 10
 
 local sessionLabel = AutoFarm:AddFolder("Session")
 sessionLabel.TextSize = 24
