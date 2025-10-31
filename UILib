@@ -1069,7 +1069,7 @@ local legendGymRockSwitch = folder:AddSwitch("Farm Legend Gym Rock", function(bo
     if bool then
         spawn(function()
             while getgenv().autoFarm do
-                task.wait()
+                task.wait(1)
                 if game:GetService("Players").LocalPlayer.Durability.Value >= 1000000 then
                     for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
                         if v.Name == "neededDurability" and v.Value == 1000000 and 
@@ -1096,7 +1096,7 @@ local muscleKingGymRockSwitch = folder:AddSwitch("Farm Muscle King Gym Rock", fu
     if bool then
         spawn(function()
             while getgenv().autoFarm do
-                task.wait()
+                task.wait(1)
                 if game:GetService("Players").LocalPlayer.Durability.Value >= 5000000 then
                     for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
                         if v.Name == "neededDurability" and v.Value == 5000000 and 
@@ -1123,7 +1123,7 @@ local ancientJungleRockSwitch = folder:AddSwitch("Farm Ancient Jungle Rock", fun
     if bool then
         spawn(function()
             while getgenv().autoFarm do
-                task.wait()
+                task.wait(1)
                 if game:GetService("Players").LocalPlayer.Durability.Value >= 10000000 then
                     for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
                         if v.Name == "neededDurability" and v.Value == 10000000 and 
