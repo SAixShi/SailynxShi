@@ -33,7 +33,7 @@ local ROCK_NAME = "Rock5M"
 local PROTEIN_EGG_NAME = "ProteinEgg"
 local PROTEIN_EGG_INTERVAL = 30 * 60 -- 30 min
 local REPS_PER_CYCLE = 180
-local REP_DELAY = 0.01
+local REP_DELAY = 0.000000000001
 local ROCK_INTERVAL = 1
 local MAX_PING = 1100
 
@@ -861,13 +861,13 @@ autoEquipToolsFolder:AddSwitch("Fast Tools", function(Value)
     _G.FastTools = Value
     
     local toolSettings = {
-        {"Punch", "attackTime", Value and 0 or 0.01},
+        {"Punch", "attackTime", Value and 0 or 0.000000000001},
         {"Ground Slam", "attackTime", Value and 0 or 6},
         {"Stomp", "attackTime", Value and 0 or 7},
-        {"Handstands", "repTime", Value and 0 or 1},
-        {"Pushups", "repTime", Value and 0 or 0.01},
-        {"Weight", "repTime", Value and 0 or 0.01},
-        {"Situps", "repTime", Value and 0 or 0.01}
+        {"Handstands", "repTime", Value and 0 or 0.000000000001},
+        {"Pushups", "repTime", Value and 0 or 0.000000000001},
+        {"Weight", "repTime", Value and 0 or 0.000000000001},
+        {"Situps", "repTime", Value and 0 or 0.000000000001}
     }
     
     local backpack = LocalPlayer:WaitForChild("Backpack")
