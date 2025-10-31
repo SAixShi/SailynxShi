@@ -25,7 +25,6 @@ end)
 -- ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ ConfiguraciÃƒÆ’Ã‚Â³n optimizada
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
-local Stats = game:GetService("Stats")
 local Workspace = game:GetService("Workspace")
 
 local LocalPlayer = Players.LocalPlayer
@@ -37,35 +36,12 @@ local PROTEIN_EGG_INTERVAL = 30 * 60
 local REPS_PER_CYCLE = 500
 local BURST_SIZE = 15
 local ROCK_INTERVAL = 1
-local MAX_PING = 1000
 local BURZE_SIZE = 15
 
 local HumanoidRootPart
 local lastProteinEggTime = 0
 local lastRockTime = 0
 local RockRef = Workspace:FindFirstChild(ROCK_NAME)
-
-local function getPing()
-    local success, ping = pcall(function()
-        return Stats.Network.ServerStatsItem["Data Ping"]:GetValue()
-    end)
-    return success and ping or 999
-end
-
-local function getDelay()
-    local ping = getPing()
-    if ping <= 70 then
-        return 0.0002
-    elseif ping <= 150 then
-        return 0.0005
-    elseif ping <= 300 then
-        return 0.001
-    elseif ping <= MAX_PING then
-        return 0.002
-    else
-        return 0.004
-    end
-end
 
 local function updateCharacterRefs()
     local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -116,34 +92,31 @@ if not getgenv()._AutoRepFarmLoop then
 
         while true do
             if getgenv()._AutoRepFarmEnabled then
-                local ping = getPing()
-
-                if ping > MAX_PING then
-                    task.wait(2)
-                else
-                    if LocalPlayer:FindFirstChild("muscleEvent") then
-                        for i = 1, REPS_PER_CYCLE, BURST_SIZE do
-                            for j = 1, BURST_SIZE do
-                                task.spawn(function()
-                                    pcall(function()
-                                        LocalPlayer.muscleEvent:FireServer("rep")
-                                    end)
+                -- Rapid strength training nonstop
+                if LocalPlayer:FindFirstChild("muscleEvent") then
+                    for i = 1, REPS_PER_CYCLE, BURST_SIZE do
+                        for j = 1, BURST_SIZE do
+                            task.spawn(function()
+                                pcall(function()
+                                    LocalPlayer.muscleEvent:FireServer("rep")
                                 end)
-                            end
-                            task.wait(getDelay())
+                            end)
                         end
-                    end
-
-                    if tick() - lastProteinEggTime >= PROTEIN_EGG_INTERVAL then
-                        eatProteinEgg()
-                        lastProteinEggTime = tick()
-                    end
-
-                    if tick() - lastRockTime >= ROCK_INTERVAL then
-                        hitRock()
-                        lastRockTime = tick()
+                        task.wait(0.0001)
                     end
                 end
+
+                if tick() - lastProteinEggTime >= PROTEIN_EGG_INTERVAL then
+                    eatProteinEgg()
+                    lastProteinEggTime = tick()
+                end
+
+                if tick() - lastRockTime >= ROCK_INTERVAL then
+                    hitRock()
+                    lastRockTime = tick()
+                end
+
+                task.wait(0.0001) -- minimal delay, ultra turbo mode
             else
                 task.wait(1)
             end
