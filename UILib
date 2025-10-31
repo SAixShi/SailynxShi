@@ -34,7 +34,8 @@ local PET_NAME = "Swift Samurai"
 local ROCK_NAME = "Rock5M"
 local PROTEIN_EGG_NAME = "ProteinEgg"
 local PROTEIN_EGG_INTERVAL = 30 * 60
-local REPS_PER_CYCLE = 180
+local REPS_PER_CYCLE = 250
+local BURST_SIZE = 15
 local ROCK_INTERVAL = 1
 local MAX_PING = 1100
 
@@ -52,14 +53,14 @@ end
 
 local function getDelay()
 	local ping = getPing()
-	if ping < 250 then
-		return 0.001
+	if ping < 200 then
+		return 0.0005
 	elseif ping < 500 then
 		return 0.002
 	elseif ping < 900 then
 		return 0.004
 	elseif ping < MAX_PING then
-		return 0.006
+		return 0.008
 	else
 		return 0.01
 	end
