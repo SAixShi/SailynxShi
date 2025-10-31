@@ -34,10 +34,11 @@ local PET_NAME = "Swift Samurai"
 local ROCK_NAME = "Rock5M"
 local PROTEIN_EGG_NAME = "ProteinEgg"
 local PROTEIN_EGG_INTERVAL = 30 * 60
-local REPS_PER_CYCLE = 250
+local REPS_PER_CYCLE = 500
 local BURST_SIZE = 15
 local ROCK_INTERVAL = 1
-local MAX_PING = 1100
+local MAX_PING = 1000
+local BURZE_SIZE = 15
 
 local HumanoidRootPart
 local lastProteinEggTime = 0
@@ -45,111 +46,109 @@ local lastRockTime = 0
 local RockRef = Workspace:FindFirstChild(ROCK_NAME)
 
 local function getPing()
-	local success, ping = pcall(function()
-		return Stats.Network.ServerStatsItem["Data Ping"]:GetValue()
-	end)
-	return success and ping or 999
+    local success, ping = pcall(function()
+        return Stats.Network.ServerStatsItem["Data Ping"]:GetValue()
+    end)
+    return success and ping or 999
 end
 
 local function getDelay()
-	local ping = getPing()
-	if ping < 200 then
-		return 0.0005
-	elseif ping < 400 then
-		return 0.001
-	elseif ping < 800 then
-		return 0.002
-	elseif ping < MAX_PING then
-		return 0.004
-	else
-		return 0.008
-	end
+    local ping = getPing()
+    if ping <= 70 then
+        return 0.0002
+    elseif ping <= 150 then
+        return 0.0005
+    elseif ping <= 300 then
+        return 0.001
+    elseif ping <= MAX_PING then
+        return 0.002
+    else
+        return 0.004
+    end
 end
 
 local function updateCharacterRefs()
-	local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-	HumanoidRootPart = character:WaitForChild("HumanoidRootPart", 5)
+    local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    HumanoidRootPart = character:WaitForChild("HumanoidRootPart", 5)
 end
 
 local function equipPet()
-	local petsFolder = LocalPlayer:FindFirstChild("petsFolder")
-	if petsFolder and petsFolder:FindFirstChild("Unique") then
-		for _, pet in pairs(petsFolder.Unique:GetChildren()) do
-			if pet.Name == PET_NAME then
-				ReplicatedStorage.rEvents.equipPetEvent:FireServer("equipPet", pet)
-				break
-			end
-		end
-	end
+    local petsFolder = LocalPlayer:FindFirstChild("petsFolder")
+    if petsFolder and petsFolder:FindFirstChild("Unique") then
+        for _, pet in pairs(petsFolder.Unique:GetChildren()) do
+            if pet.Name == PET_NAME then
+                ReplicatedStorage.rEvents.equipPetEvent:FireServer("equipPet", pet)
+                break
+            end
+        end
+    end
 end
 
 local function eatProteinEgg()
-	if LocalPlayer:FindFirstChild("Backpack") then
-		for _, item in pairs(LocalPlayer.Backpack:GetChildren()) do
-			if item.Name == PROTEIN_EGG_NAME then
-				ReplicatedStorage.rEvents.eatEvent:FireServer("eat", item)
-				break
-			end
-		end
-	end
+    if LocalPlayer:FindFirstChild("Backpack") then
+        for _, item in pairs(LocalPlayer.Backpack:GetChildren()) do
+            if item.Name == PROTEIN_EGG_NAME then
+                ReplicatedStorage.rEvents.eatEvent:FireServer("eat", item)
+                break
+            end
+        end
+    end
 end
 
 local function hitRock()
-	if not RockRef or not RockRef.Parent then
-		RockRef = Workspace:FindFirstChild(ROCK_NAME)
-	end
-	if RockRef and HumanoidRootPart then
-		HumanoidRootPart.CFrame = RockRef.CFrame * CFrame.new(0, 0, -5)
-		ReplicatedStorage.rEvents.hitEvent:FireServer("hit", RockRef)
-	end
+    if not RockRef or not RockRef.Parent then
+        RockRef = Workspace:FindFirstChild(ROCK_NAME)
+    end
+    if RockRef and HumanoidRootPart then
+        HumanoidRootPart.CFrame = RockRef.CFrame * CFrame.new(0, 0, -(5 + BURZE_SIZE))
+        ReplicatedStorage.rEvents.hitEvent:FireServer("hit", RockRef)
+    end
 end
 
 if not getgenv()._AutoRepFarmLoop then
-	getgenv()._AutoRepFarmLoop = true
+    getgenv()._AutoRepFarmLoop = true
 
-	task.spawn(function()
-		updateCharacterRefs()
-		equipPet()
-		lastProteinEggTime = tick()
-		lastRockTime = tick()
+    task.spawn(function()
+        updateCharacterRefs()
+        equipPet()
+        lastProteinEggTime = tick()
+        lastRockTime = tick()
 
-		while true do
-			if getgenv()._AutoRepFarmEnabled then
-				local ping = getPing()
+        while true do
+            if getgenv()._AutoRepFarmEnabled then
+                local ping = getPing()
 
-				if ping > MAX_PING then
-					task.wait(5)
-				else
-					if LocalPlayer:FindFirstChild("muscleEvent") then
-						for i = 1, REPS_PER_CYCLE, BURST_SIZE do
-							for j = 1, BURST_SIZE do
-								task.spawn(function()
-									pcall(function()
-										LocalPlayer.muscleEvent:FireServer("rep")
-									end)
-								end)
-							end
-							task.wait(0.001)
-						end
-					end
+                if ping > MAX_PING then
+                    task.wait(2)
+                else
+                    if LocalPlayer:FindFirstChild("muscleEvent") then
+                        for i = 1, REPS_PER_CYCLE, BURST_SIZE do
+                            for j = 1, BURST_SIZE do
+                                task.spawn(function()
+                                    pcall(function()
+                                        LocalPlayer.muscleEvent:FireServer("rep")
+                                    end)
+                                end)
+                            end
+                            task.wait(getDelay())
+                        end
+                    end
 
-					if tick() - lastProteinEggTime >= PROTEIN_EGG_INTERVAL then
-						eatProteinEgg()
-						lastProteinEggTime = tick()
-					end
+                    if tick() - lastProteinEggTime >= PROTEIN_EGG_INTERVAL then
+                        eatProteinEgg()
+                        lastProteinEggTime = tick()
+                    end
 
-					if tick() - lastRockTime >= ROCK_INTERVAL then
-						hitRock()
-						lastRockTime = tick()
-					end
-
-					task.wait(getDelay())
-				end
-			else
-				task.wait(1)
-			end
-		end
-	end)
+                    if tick() - lastRockTime >= ROCK_INTERVAL then
+                        hitRock()
+                        lastRockTime = tick()
+                    end
+                end
+            else
+                task.wait(1)
+            end
+        end
+    end)
 end
 
 
