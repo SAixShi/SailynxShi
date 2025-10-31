@@ -522,23 +522,23 @@ local function formatNumber(number)
     return formattedStr
 end
 
-local timeLabel = features:AddLabel("â±ï¸Time:")
+local timeLabel = AutoFarm:AddFolder("Time")
 timeLabel.TextSize = 24
 timeLabel.Font = Enum.Font.PatrickHand
 
-local stopwatchLabel = features:AddLabel("0d 0h 0m 0s")
+local stopwatchLabel = AutoFarm:AddFolder("0d 0h 0m 0s")
 stopwatchLabel.TextSize = 20
 stopwatchLabel.Font = Enum.Font.PatrickHand
 
 features:AddLabel("").TextSize = 10
 
-local statsLabel = features:AddLabel("ðŸ“ŠStats:")
+local statsLabel = AutoFarm:AddFolder("Stats")
 statsLabel.TextSize = 24
 statsLabel.Font = Enum.Font.PatrickHand
 
-local strengthLabel = features:AddLabel("Strength: 0")
-local durabilityLabel = features:AddLabel("Durability: 0")
-local rebirthsLabel = features:AddLabel("Rebirths: 0")
+local strengthLabel = AutoFarm:AddaFolder("Strength: 0")
+local durabilityLabel = AutoFarm:AddFolder("Durability: 0")
+local rebirthsLabel = AutoFarm:AddFolder("Rebirths: 0")
 
 strengthLabel.TextSize = 20
 strengthLabel.Font = Enum.Font.PatrickHand
@@ -553,13 +553,13 @@ local sessionRebirths = rebirthsStat.Value
 
 features:AddLabel("").TextSize = 10
 
-local sessionLabel = features:AddLabel("ðŸ•¹ï¸Session:")
+local sessionLabel = AutoFarm:AddFolder("Session")
 sessionLabel.TextSize = 24
 sessionLabel.Font = Enum.Font.PatrickHand
 
-local sessionStrengthLabel = features:AddLabel("Gained Strength: 0")
-local sessionDurabilityLabel = features:AddLabel("Gained Durability: 0")
-local sessionRebirthsLabel = features:AddLabel("Gained Rebirths: 0")
+local sessionStrengthLabel = AutoFarm:AddFolder("Gained Strength: 0")
+local sessionDurabilityLabel = AutoFarm:AddFolder("Gained Durability: 0")
+local sessionRebirthsLabel = AutoFarm:AddFolder("Gained Rebirths: 0")
 
 sessionStrengthLabel.TextSize = 20
 sessionStrengthLabel.Font = Enum.Font.PatrickHand
