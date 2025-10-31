@@ -867,8 +867,8 @@ autoEquipToolsFolder:AddSwitch("Fast Tools", function(Value)
         {"Ground Slam", "attackTime", Value and 0 or 6},
         {"Stomp", "attackTime", Value and 0 or 7},
         {"Handstands", "repTime", Value and 0 or 1},
-        {"Pushups", "repTime", Value and 0 or 0.01},
-        {"Weight", "repTime", Value and 0 or 0.01},
+        {"Pushups", "repTime", Value and 0 or 1},
+        {"Weight", "repTime", Value and 0 or 1},
         {"Situps", "repTime", Value and 0 or 1}
     }
     
