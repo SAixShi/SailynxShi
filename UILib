@@ -1123,7 +1123,7 @@ local ancientJungleRockSwitch = folder:AddSwitch("Farm Ancient Jungle Rock", fun
     if bool then
         spawn(function()
             while getgenv().autoFarm do
-                task.wait(1)
+                task.wait()
                 if game:GetService("Players").LocalPlayer.Durability.Value >= 10000000 then
                     for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
                         if v.Name == "neededDurability" and v.Value == 10000000 and 
@@ -1131,9 +1131,9 @@ local ancientJungleRockSwitch = folder:AddSwitch("Farm Ancient Jungle Rock", fun
                            game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
  
                             firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
-                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0.01)
                             firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
-                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0.01)
                             gettool()
                         end
                     end
