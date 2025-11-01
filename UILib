@@ -651,7 +651,7 @@ RebirthFolder:AddSwitch("Fast Rebirths", function(state)
                 local baseStrength = 10000 + (5000 * rebirths)
                 local golden = getGoldenRebirthCount()
                 if golden >= 1 and golden <= 5 then
-                    baseStrength = baseStrength * (1 - golden * 0.1)
+                    baseStrength = baseStrength * (1 - golden * 0.01)
                 end
                 return math.floor(baseStrength)
             end
@@ -671,7 +671,7 @@ RebirthFolder:AddSwitch("Fast Rebirths", function(state)
                     local oldRebirths = c.leaderstats.Rebirths.Value
                     repeat
                         a.rEvents.rebirthRemote:InvokeServer("rebirthRequest")
-                        task.wait(0.1)
+                        task.wait(0.01)
                     until c.leaderstats.Rebirths.Value > oldRebirths or not getgenv().AutoFarming
                 end
                 task.wait()
