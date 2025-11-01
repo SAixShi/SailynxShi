@@ -521,33 +521,62 @@ local rebirthsStat = leaderstats:WaitForChild("Rebirths")
 local startTime = tick()
 local sessionRebirths = rebirthsStat.Value
 
-local timeLabel = RebirthFolder:AddLabel("Time")
+local timeLabel = AutoFarm:AddLabel("Time")
 timeLabel.TextSize = 26
 timeLabel.Font = Enum.Font.PatrickHand
 
-local stopwatchLabel = RebirthFolder:AddLabel("0d 0h 0m 0s")
+local stopwatchLabel = AutoFarm:AddLabel("0d 0h 0m 0s")
 stopwatchLabel.TextSize = 26
 stopwatchLabel.Font = Enum.Font.PatrickHand
 
-RebirthFolder:AddLabel("").TextSize = 10
+AutoFarm:AddLabel("").TextSize = 10
 
-local gainedLabel = RebirthFolder:AddLabel("Gained Rebirths: 0")
+local gainedLabel = AutoFarm:AddLabel("Gained Rebirths: 0")
 gainedLabel.TextSize = 26
 gainedLabel.Font = Enum.Font.PatrickHand
 
-task.spawn(function()
-    while task.wait(1) do
-        local elapsed = tick() - startTime
-        local days = math.floor(elapsed / 86400)
-        local hours = math.floor((elapsed % 86400) / 3600)
-        local minutes = math.floor((elapsed % 3600) / 60)
-        local seconds = math.floor(elapsed % 60)
-        stopwatchLabel.Text = string.format("%dd %dh %dm %ds", days, hours, minutes, seconds)
+local currentLabel = AutoFarm:AddLabel("Current Rebirths: 0")
+currentLabel.TextSize = 26
+currentLabel.Font = Enum.Font.PatrickHand
 
-        local gainedRebirths = rebirthsStat.Value - sessionRebirths
-        gainedLabel.Text = "Gained Rebirths: " .. tostring(gainedRebirths)
-    end
+local rpmLabel = AutoFarm:AddLabel("Rebirths per Minute: 0")
+rpmLabel.TextSize = 26
+rpmLabel.Font = Enum.Font.PatrickHand
+
+local rphLabel = AutoFarm:AddLabel("Rebirths per Hour: 0")
+rphLabel.TextSize = 26
+rphLabel.Font = Enum.Font.PatrickHand
+
+local function calculateRates(gained, elapsedSeconds)
+	if elapsedSeconds <= 0 then return 0, 0 end
+	local minutes = elapsedSeconds / 60
+	local hours = elapsedSeconds / 3600
+	local rpm = gained / minutes
+	local rph = gained / hours
+	return rpm, rph
+end
+
+task.spawn(function()
+	while task.wait(1) do
+		local elapsed = tick() - startTime
+		local days = math.floor(elapsed / 86400)
+		local hours = math.floor((elapsed % 86400) / 3600)
+		local minutes = math.floor((elapsed % 3600) / 60)
+		local seconds = math.floor(elapsed % 60)
+		stopwatchLabel.Text = string.format("%dd %dh %dm %ds", days, hours, minutes, seconds)
+
+		local currentRebirths = rebirthsStat.Value
+		local gainedRebirths = currentRebirths - sessionRebirths
+
+		currentLabel.Text = "Current Rebirths: " .. tostring(currentRebirths)
+		gainedLabel.Text = "Gained Rebirths: " .. tostring(gainedRebirths)
+
+		local rpm, rph = calculateRates(gainedRebirths, elapsed)
+		rpmLabel.Text = "Rebirths per Minute: " .. string.format("%.2f", rpm)
+		rphLabel.Text = "Rebirths per Hour: " .. string.format("%.2f", rph)
+	end
 end)
+
 
 
 -- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒâ€šÃ‚Â Fast Rebirths
