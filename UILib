@@ -557,7 +557,7 @@ local stopwatchLabel = RebirthFolder:AddLabel("0d 0h 0m 0s")
 stopwatchLabel.TextSize = 26
 stopwatchLabel.Font = Enum.Font.PatrickHand
 
-local currentLabel = RebirthFolder:AddLabel("Rebirths: 0")
+local currentLabel = RebirthFolder:AddLabel("Current: 0")
 currentLabel.TextSize = 26
 currentLabel.Font = Enum.Font.PatrickHand
 
