@@ -514,21 +514,33 @@ end)
 -- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã¢â‚¬â„¢ FOLDER REBIRTH (Ordenado con Anti AFK antes de Anti Lag)
 local RebirthFolder = AutoFarm:AddFolder("OP Rebirth")
 
-local function formatNumber(n)
+local function FormatShort(n)
 	if type(n) ~= "number" then return tostring(n) end
 	if n >= 1e9 then
-		return (string.format("%.1f", n/1e9)):gsub("%.0","") .. "B"
+		return (string.format('%.1f', n/1e9)):gsub('%.0','') .. 'B'
 	elseif n >= 1e6 then
-		return (string.format("%.1f", n/1e6)):gsub("%.0","") .. "M"
+		return (string.format('%.1f', n/1e6)):gsub('%.0','') .. 'M'
 	elseif n >= 1e3 then
-		return (string.format("%.1f", n/1e3)):gsub("%.0","") .. "K"
+		return (string.format('%.1f', n/1e3)):gsub('%.0','') .. 'K'
 	else
 		return tostring(n)
 	end
 end
 
+local function FormatGain(n)
+	return "+" .. FormatShort(n)
+end
 
-
+local function FormatRate(v)
+	if type(v) ~= "number" then return tostring(v) end
+	if v < 1 then
+		return string.format("%.2f", v)
+	elseif v < 1000 then
+		return string.format("%.2f", v)
+	else
+		return FormatShort(v)
+	end
+end
 
 local player = game.Players.LocalPlayer
 local leaderstats = player:WaitForChild("leaderstats")
@@ -545,19 +557,19 @@ local stopwatchLabel = RebirthFolder:AddLabel("0d 0h 0m 0s")
 stopwatchLabel.TextSize = 26
 stopwatchLabel.Font = Enum.Font.PatrickHand
 
-local gainedLabel = RebirthFolder:AddLabel("Gained Rebirths: 0")
-gainedLabel.TextSize = 26
-gainedLabel.Font = Enum.Font.PatrickHand
-
-local currentLabel = RebirthFolder:AddLabel("Current Rebirths: 0")
+local currentLabel = RebirthFolder:AddLabel("Current: 0")
 currentLabel.TextSize = 26
 currentLabel.Font = Enum.Font.PatrickHand
 
-local rpmLabel = RebirthFolder:AddLabel("Rebirths per Minute: 0")
+local gainedLabel = RebirthFolder:AddLabel("Gained: +0")
+gainedLabel.TextSize = 26
+gainedLabel.Font = Enum.Font.PatrickHand
+
+local rpmLabel = RebirthFolder:AddLabel("Rebirths / Min: 0")
 rpmLabel.TextSize = 26
 rpmLabel.Font = Enum.Font.PatrickHand
 
-local rphLabel = RebirthFolder:AddLabel("Rebirths per Hour: 0")
+local rphLabel = RebirthFolder:AddLabel("Rebirths / Hour: 0")
 rphLabel.TextSize = 26
 rphLabel.Font = Enum.Font.PatrickHand
 
@@ -582,14 +594,15 @@ task.spawn(function()
 		local currentRebirths = rebirthsStat.Value
 		local gainedRebirths = currentRebirths - sessionRebirths
 
-		currentLabel.Text = "Current Rebirths: " .. tostring(currentRebirths)
-		gainedLabel.Text = "Gained Rebirths: " .. tostring(gainedRebirths)
+		currentLabel.Text = "Current: " .. FormatShort(currentRebirths)
+		gainedLabel.Text = "Gained: " .. FormatGain(gainedRebirths)
 
 		local rpm, rph = calculateRates(gainedRebirths, elapsed)
-		rpmLabel.Text = "Rebirths per Minute: " .. string.format("%.2f", rpm)
-		rphLabel.Text = "Rebirths per Hour: " .. string.format("%.2f", rph)
+		rpmLabel.Text = "Rebirths / Min: " .. FormatRate(rpm)
+		rphLabel.Text = "Rebirths / Hour: " .. FormatRate(rph)
 	end
 end)
+
 
 
 
