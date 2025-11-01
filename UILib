@@ -527,6 +527,9 @@ local function formatNumber(n)
 	end
 end
 
+
+
+
 local player = game.Players.LocalPlayer
 local leaderstats = player:WaitForChild("leaderstats")
 local rebirthsStat = leaderstats:WaitForChild("Rebirths")
