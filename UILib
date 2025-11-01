@@ -527,13 +527,6 @@ local function formatNumber(n)
 	end
 end
 
-
-
-currentLabel.Text = "Current Rebirths: " .. formatNumber(currentRebirths)
-gainedLabel.Text = "Gained Rebirths: " .. formatNumber(gainedRebirths)
-rpmLabel.Text = "Rebirths per Minute: " .. formatNumber(rpm)
-rphLabel.Text = "Rebirths per Hour: " .. formatNumber(rph)
-
 local player = game.Players.LocalPlayer
 local leaderstats = player:WaitForChild("leaderstats")
 local rebirthsStat = leaderstats:WaitForChild("Rebirths")
