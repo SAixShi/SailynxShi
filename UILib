@@ -514,6 +514,18 @@ end)
 -- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã¢â‚¬â„¢ FOLDER REBIRTH (Ordenado con Anti AFK antes de Anti Lag)
 local RebirthFolder = AutoFarm:AddFolder("OP Rebirth")
 
+local function formatNumber(n)
+	if n >= 1e9 then
+		return string.format("%.1fB", n/1e9)
+	elseif n >= 1e6 then
+		return string.format("%.1fM", n/1e6)
+	elseif n >= 1e3 then
+		return string.format("%.1fk", n/1e3)
+	else
+		return tostring(n)
+	end
+end
+
 local player = game.Players.LocalPlayer
 local leaderstats = player:WaitForChild("leaderstats")
 local rebirthsStat = leaderstats:WaitForChild("Rebirths")
