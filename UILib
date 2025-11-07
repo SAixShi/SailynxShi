@@ -1,14 +1,11 @@
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/AOD-RuRu/AoD/refs/heads/main/silence%20ui%20lib",true))()
 
--- CARGA DE LIBRERÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂA
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/memejames/elerium-v2-ui-library/main/Library", true))()
-
--- VENTANA PRINCIPAL
 local window = library:AddWindow("Shi PAID", {
     main_color = Color3.fromRGB(80, 0, 130), -- dark purple
-    min_size = Vector2.new(610, 830),
+    min_size = Vector2.new(420, 400),
     can_resize = false,
 })
 
@@ -16,7 +13,6 @@ local AutoFarm = window:AddTab("Farm OP")
 AutoFarm:Show()
 
 
--- 1ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢Ãƒâ€ Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â£ Switch: Fuerza OP
 AutoFarm:AddSwitch("OP STRENGTH", function(state)
     getgenv()._AutoRepFarmEnabled = state
     warn("[Auto Rep Farm] Estado cambiado a:", state and "ON" or "OFF")
