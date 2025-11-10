@@ -497,6 +497,7 @@ local sessionRebirths = rebirthsStat.Value
 local timeLabel = RebirthFolder:AddLabel("Time")
 timeLabel.TextSize = 24
 timeLabel.Font = Enum.Font.PatrickHand
+timeLabel.TextColor3 = Color3.fromRGB(80, 0, 130)
 
 local stopwatchLabel = RebirthFolder:AddLabel("0d 0h 0m 0s")
 stopwatchLabel.TextSize = 26
