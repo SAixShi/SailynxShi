@@ -495,7 +495,7 @@ local startTime = tick()
 local sessionRebirths = rebirthsStat.Value
 
 local timeLabel = RebirthFolder:AddLabel("Time")
-timeLabel.TextSize = 26
+timeLabel.TextSize = 24
 timeLabel.Font = Enum.Font.PatrickHand
 
 local stopwatchLabel = RebirthFolder:AddLabel("0d 0h 0m 0s")
@@ -515,6 +515,7 @@ task.spawn(function()
         local hours = math.floor((elapsed % 86400) / 3600)
         local minutes = math.floor((elapsed % 3600) / 60)
         local seconds = math.floor(elapsed % 60)
+
         stopwatchLabel.Text = string.format("%dd %dh %dm %ds", days, hours, minutes, seconds)
 
         local gainedRebirths = rebirthsStat.Value - sessionRebirths
