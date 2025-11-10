@@ -486,7 +486,6 @@ end)
 
 
 local RebirthFolder = AutoFarm:AddFolder("OP Rebirth")
-
 local player = game.Players.LocalPlayer
 local leaderstats = player:WaitForChild("leaderstats")
 local rebirthsStat = leaderstats:WaitForChild("Rebirths")
@@ -515,6 +514,34 @@ local gainedLabel = RebirthFolder:AddLabel("Gained Rebirths: 0")
 gainedLabel.TextSize = 26
 gainedLabel.Font = Enum.Font.PatrickHand
 gainedLabel.TextColor3 = Color3.fromRGB(80, 0, 130)
+
+local lastRebirths = rebirthsStat.Value
+
+task.spawn(function()
+    while task.wait(1) do
+        local elapsed = tick() - startTime
+        local days = math.floor(elapsed / 86400)
+        local hours = math.floor((elapsed % 86400) / 3600)
+        local minutes = math.floor((elapsed % 3600) / 60)
+        local seconds = math.floor(elapsed % 60)
+        stopwatchLabel.Text = string.format("%dd %dh %dm %ds", days, hours, minutes, seconds)
+
+        local current = rebirthsStat.Value
+        currentLabel.Text = "Current Rebirths: " .. current
+
+        if current > lastRebirths then
+            currentLabel.TextColor3 = Color3.fromRGB(80, 0, 130)
+        else
+            currentLabel.TextColor3 = Color3.fromRGB(80, 0, 130)
+        end
+
+        local gainedRebirths = current - sessionRebirths
+        gainedLabel.Text = "Gained Rebirths: " .. tostring(gainedRebirths)
+
+        lastRebirths = current
+    end
+end)
+
 
 RebirthFolder:AddSwitch("Fast Rebirths", function(state)
     getgenv().AutoFarming = state
