@@ -846,7 +846,7 @@ autoEquipToolsFolder:AddSwitch("Auto Punch", function(Value)
                         punch.attackTime.Value = 0
                     end
                 end
-                task.wait(0.1)
+                task.wait(0.003)
             end
         end)
         
@@ -880,7 +880,7 @@ autoEquipToolsFolder:AddSwitch("Fast Tools", function(Value)
     _G.FastTools = Value
     
     local toolSettings = {
-        {"Punch", "attackTime", Value and 0 or 0.01},
+        {"Punch", "attackTime", Value and 0 or 0.003},
         {"Ground Slam", "attackTime", Value and 0 or 6},
         {"Stomp", "attackTime", Value and 0 or 7},
         {"Handstands", "repTime", Value and 0 or 1},
@@ -900,6 +900,53 @@ autoEquipToolsFolder:AddSwitch("Fast Tools", function(Value)
         local equippedTool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild(toolInfo[1])
         if equippedTool and equippedTool:FindFirstChild(toolInfo[2]) then
             equippedTool[toolInfo[2]].Value = toolInfo[3]
+        end
+    end
+end)
+
+local LocalPlayer = game:GetService("Players").LocalPlayer
+
+autoEquipToolsFolder:AddSwitch("PUSHUPS + ROCK FARM", function(bool)
+    _G.AutoPushups = bool
+    getgenv().autoFarm = bool
+
+    if bool then
+        local pushupsTool = LocalPlayer.Backpack:FindFirstChild("Pushups")
+        if pushupsTool then
+            LocalPlayer.Character.Humanoid:EquipTool(pushupsTool)
+        end
+
+        task.spawn(function()
+            while getgenv().autoFarm do
+                task.wait()
+
+                if _G.AutoPushups then
+                    LocalPlayer.muscleEvent:FireServer("rep")
+                end
+                
+                if LocalPlayer.Durability.Value >= 10000000 then
+                    for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+                        if v.Name == "neededDurability" and v.Value == 10000000 and
+                            LocalPlayer.Character:FindFirstChild("LeftHand") and
+                            LocalPlayer.Character:FindFirstChild("RightHand") then
+
+                            local rock = v.Parent:FindFirstChild("Rock")
+                            if rock then
+                                firetouchinterest(rock, LocalPlayer.Character.RightHand, 0)
+                                firetouchinterest(rock, LocalPlayer.Character.RightHand, 1)
+                                firetouchinterest(rock, LocalPlayer.Character.LeftHand, 0)
+                                firetouchinterest(rock, LocalPlayer.Character.LeftHand, 1)
+                                gettool()
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        local equipped = LocalPlayer.Character:FindFirstChild("Pushups")
+        if equipped then
+            equipped.Parent = LocalPlayer.Backpack
         end
     end
 end)
@@ -1313,20 +1360,17 @@ rebirthsFolder:AddTextBox("Rebirth Target", function(text)
     end
 end)
 
--- Create toggle switches
 local infiniteSwitch -- Forward declaration
 
 local targetSwitch = rebirthsFolder:AddSwitch("Auto Rebirth Target", function(bool)
     _G.targetRebirthActive = bool
     
     if bool then
-        -- Turn off infinite rebirth if it's on
         if _G.infiniteRebirthActive and infiniteSwitch then
             infiniteSwitch:Set(false)
             _G.infiniteRebirthActive = false
         end
         
-        -- Start target rebirth loop
         spawn(function()
             while _G.targetRebirthActive and wait(0.1) do
                 local currentRebirths = game.Players.LocalPlayer.leaderstats.Rebirths.Value
@@ -1336,7 +1380,7 @@ local targetSwitch = rebirthsFolder:AddSwitch("Auto Rebirth Target", function(bo
                     _G.targetRebirthActive = false
                     
                     game:GetService("StarterGui"):SetCore("SendNotification", {
-                        Title = "ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡Objetivo Alcanzado!",
+                        Title = "Kupal Kaba",
                         Text = "Has alcanzado " .. tostring(targetRebirthValue) .. " renacimientos",
                         Duration = 5
                     })
