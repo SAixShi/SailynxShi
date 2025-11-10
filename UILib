@@ -466,7 +466,6 @@ AutoFarm:AddButton("Equip Swift Samurai", function()
 end)
 
 
--- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½Ãƒâ€šÃ‚Â® BotÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n: Jungle Squat
 AutoFarm:AddButton("Jungle Squat", function()
     local char = LocalPlayer.Character
     if char and char:FindFirstChild("HumanoidRootPart") then
@@ -486,7 +485,6 @@ AutoFarm:AddButton("Jungle Squat", function()
 end)
 
 
--- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã¢â‚¬â„¢ FOLDER REBIRTH (Ordenado con Anti AFK antes de Anti Lag)
 local RebirthFolder = AutoFarm:AddFolder("OP Rebirth")
 
 local player = game.Players.LocalPlayer
@@ -525,7 +523,6 @@ task.spawn(function()
 end)
 
 
--- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒâ€šÃ‚Â Fast Rebirths
 RebirthFolder:AddSwitch("Fast Rebirths", function(state)
     getgenv().AutoFarming = state
     if state then
@@ -598,7 +595,6 @@ RebirthFolder:AddSwitch("Fast Rebirths", function(state)
     end
 end)
 
--- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Lock Position
 RebirthFolder:AddSwitch("Lock Position", function(Value)
     if Value then
         local currentPos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
@@ -615,7 +611,6 @@ RebirthFolder:AddSwitch("Lock Position", function(Value)
     end
 end)
 
--- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â¡ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Anti Lag
 RebirthFolder:AddButton("Anti Lag", function()
     for _, v in pairs(game:GetDescendants()) do
         if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
@@ -655,7 +650,6 @@ RebirthFolder:AddButton("Anti Lag", function()
     })
 end)
 
--- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â¸Ãƒâ€šÃ‚Â¢ Jungle Lift (Nuevo)
 RebirthFolder:AddButton("Jungle Lift", function()
     local player = game.Players.LocalPlayer
     local char = player.Character or player.CharacterAdded:Wait()
@@ -677,7 +671,6 @@ AutoFarm:AddLabel("Farm Whiteout Packs")
 local autoEquipToolsFolder = AutoFarm:AddFolder("Auto Tools")
 
 
--- ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ ConfiguraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n optimizada
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Stats = game:GetService("Stats")
@@ -742,7 +735,6 @@ local function hitRock()
     end
 end
 
--- ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loop principal
 if not getgenv()._AutoRepFarmLoop then
     getgenv()._AutoRepFarmLoop = true
 
@@ -778,14 +770,13 @@ if not getgenv()._AutoRepFarmLoop then
                     task.wait(REP_DELAY)
                 end
             else
-                task.wait(1)
+                task.wait(0.01)
             end
         end
     end)
 end
 
 
--- BotÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n para desbloquear el Gamepass AutoLift
 autoEquipToolsFolder:AddButton("Gamepass AutoLift", function()
     local gamepassFolder = game:GetService("ReplicatedStorage").gamepassIds
     local player = game:GetService("Players").LocalPlayer
@@ -797,7 +788,6 @@ autoEquipToolsFolder:AddButton("Gamepass AutoLift", function()
     end
 end)
 
--- FunciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n para crear switches de auto-equip
 local function createAutoToolSwitch(toolName, globalVar)
     autoEquipToolsFolder:AddSwitch("Auto " .. toolName, function(Value)
         _G[globalVar] = Value
@@ -819,7 +809,7 @@ local function createAutoToolSwitch(toolName, globalVar)
             while _G[globalVar] do
                 if not _G[globalVar] then break end
                 LocalPlayer.muscleEvent:FireServer("rep")
-                task.wait(0.1)
+                task.wait(0.003)
             end
         end)
     end)
@@ -884,7 +874,7 @@ autoEquipToolsFolder:AddSwitch("Fast Tools", function(Value)
         {"Ground Slam", "attackTime", Value and 0 or 6},
         {"Stomp", "attackTime", Value and 0 or 7},
         {"Handstands", "repTime", Value and 0 or 1},
-        {"Pushups", "repTime", Value and 0 or 1},
+        {"Pushups", "repTime", Value and 0 or 0.003},
         {"Weight", "repTime", Value and 0 or 1},
         {"Situps", "repTime", Value and 0 or 1}
     }
