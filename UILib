@@ -14,13 +14,11 @@ local AutoFarm = window:AddTab("Farm OP")
 AutoFarm:Show()
 
 
--- 1ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢Ãƒâ€ Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â£ Switch: Fuerza OP
 AutoFarm:AddSwitch("OP STRENGTH", function(state)
     getgenv()._AutoRepFarmEnabled = state
     warn("[Auto Rep Farm] Estado cambiado a:", state and "ON" or "OFF")
 end)
 
--- ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ ConfiguraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n optimizada
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Stats = game:GetService("Stats")
@@ -85,7 +83,6 @@ local function hitRock()
     end
 end
 
--- ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loop principal
 if not getgenv()._AutoRepFarmLoop then
     getgenv()._AutoRepFarmLoop = true
 
@@ -129,7 +126,6 @@ end
 
 
 
--- 2ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢Ãƒâ€ Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â£ Switch: Eat Egg (30 Min)
 local autoEatEnabled = false
 local function eatProteinEggNew()
     local player = game.Players.LocalPlayer
@@ -165,7 +161,6 @@ AutoFarm:AddSwitch("Eat Egg (30 Min)", function(state)
 end)
 
 
--- 4ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢Ãƒâ€ Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â£ Switch: Anti Lag
 AutoFarm:AddSwitch("Anti Lag", function(State)
     local lighting = game:GetService("Lighting")
     if State then
@@ -208,10 +203,8 @@ AutoFarm:AddSwitch("Anti Lag", function(State)
 end)
 
 
--- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒâ€šÃ‚Â¹ SWITCH PARA ACTIVAR/DESACTIVAR EL ANTI AFK
 AutoFarm:AddSwitch("Anti AFK", function(state)
     if state then
-        -- ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ ACTIVAR ANTI AFK
         if getgenv().AntiAfkExecuted and thisoneissocoldww then 
             getgenv().AntiAfkExecuted = false
             getgenv().zamanbaslaticisi = false
@@ -237,7 +230,7 @@ AutoFarm:AddSwitch("Anti AFK", function(state)
         thisoneissocoldww.Parent = game.CoreGui
         thisoneissocoldww.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-        madebybloodofbatus.Name = "madebybloodofbatus"
+        madebybloodofbatus.Name = "madebySai"
         madebybloodofbatus.Parent = thisoneissocoldww
         madebybloodofbatus.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
         madebybloodofbatus.Position = UDim2.new(0.085,0,0.13,0)
@@ -264,7 +257,7 @@ AutoFarm:AddSwitch("Anti AFK", function(state)
         uselesslabelone.Position = UDim2.new(0.3,0,0,0)
         uselesslabelone.Size = UDim2.new(0,95,0,24)
         uselesslabelone.Font = Enum.Font.SourceSans
-        uselesslabelone.Text = "Anti Afk sacado de chat gpt de rafaelÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¹Ã…â€œÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡"
+        uselesslabelone.Text = "Anti Afk By Sai"
         uselesslabelone.TextColor3 = Color3.fromRGB(255,255,255)
         uselesslabelone.TextSize = 14
 
@@ -330,7 +323,6 @@ AutoFarm:AddSwitch("Anti AFK", function(state)
         uselesslabelfour.TextColor3 = Color3.fromRGB(255,255,255)
         uselesslabelfour.TextSize = 14
 
-        -- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€šÃ‚Â§Ãƒâ€šÃ‚Â² Draggable UI
         local Drag = madebybloodofbatus
         local gsTween = game:GetService("TweenService")
         local UserInputService = game:GetService("UserInputService")
@@ -361,14 +353,12 @@ AutoFarm:AddSwitch("Anti AFK", function(state)
             if input == dragInput and dragging then update(input) end
         end)
 
-        -- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢Ãƒâ€šÃ‚Â¤ Anti-AFK Core
         local vu = game:GetService('VirtualUser')
         game.Players.LocalPlayer.Idled:Connect(function()
             vu:CaptureController()
             vu:ClickButton2(Vector2.new())
         end)
 
-        -- ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡Ãƒâ€šÃ‚Â¡ FPS & Ping
         local RunService = game:GetService("RunService")
         local sec = tick()
         local FPS = {}
@@ -388,7 +378,6 @@ AutoFarm:AddSwitch("Anti AFK", function(state)
             end
         end)
 
-        -- ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€šÃ‚Â±ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â Timer
         local saniye, dakika, saat = 0,0,0
         getgenv().zamanbaslaticisi = true
         spawn(function()
@@ -401,7 +390,6 @@ AutoFarm:AddSwitch("Anti AFK", function(state)
             end
         end)
     else
-        -- ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ DESACTIVAR ANTI AFK
         getgenv().AntiAfkExecuted = false
         getgenv().zamanbaslaticisi = false
         if game.CoreGui:FindFirstChild("thisoneissocoldww") then
@@ -411,7 +399,6 @@ AutoFarm:AddSwitch("Anti AFK", function(state)
 end)
 
 
--- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“Ãƒâ€šÃ‚Â¼ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â Hide All Frames
 AutoFarm:AddSwitch("Hide All Frames", function(bool)
     local rSto = game:GetService("ReplicatedStorage")
     for _, obj in pairs(rSto:GetChildren()) do
@@ -422,7 +409,6 @@ AutoFarm:AddSwitch("Hide All Frames", function(bool)
 end)
 
 
--- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½Ãƒâ€šÃ‚Â° BotÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n: Girar Ruleta
 AutoFarm:AddButton("Auto Spin", function(state)
     _G.AutoSpinWheel = state
     
@@ -445,7 +431,6 @@ AutoFarm:AddButton("Equip Swift Samurai", function()
     local LocalPlayer = game:GetService("Players").LocalPlayer
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-    -- Primero desequipamos todo
     local petsFolder = LocalPlayer:FindFirstChild("petsFolder")
     if not petsFolder then return end
 
