@@ -504,6 +504,10 @@ stopwatchLabel.Font = Enum.Font.PatrickHand
 
 RebirthFolder:AddLabel("").TextSize = 10
 
+local currentLabel = RebirthFolder:AddLabel("Current Rebirths: " .. rebirthsStat.Value)
+currentLabel.TextSize = 26
+currentLabel.Font = Enum.Font.PatrickHand
+
 local gainedLabel = RebirthFolder:AddLabel("Gained Rebirths: 0")
 gainedLabel.TextSize = 26
 gainedLabel.Font = Enum.Font.PatrickHand
