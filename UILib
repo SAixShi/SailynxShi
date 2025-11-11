@@ -4386,4 +4386,4 @@ local function forceResizeWindows(new_x, new_y)
 end
 
 wait(1) 
-forceResizeWindows(280, 450)
+forceResizeWindows(500, 450)
