@@ -125,7 +125,6 @@ if not getgenv()._AutoRepFarmLoop then
 end
 
 
-
 local autoEatEnabled = false
 local function eatProteinEggNew()
     local player = game.Players.LocalPlayer
