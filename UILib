@@ -409,7 +409,7 @@ AutoFarm:AddSwitch("Hide All Frames", function(bool)
 end)
 
 
-AutoFarm:AddButton("Auto Spin", function(state)
+AutoFarm:AddSwitch("Auto Spin", function(state)
     _G.AutoSpinWheel = state
     
     if state then
@@ -894,7 +894,7 @@ autoEquipToolsFolder:AddSwitch("Fast Tools", function(Value)
         {"Ground Slam", "attackTime", Value and 0 or 6},
         {"Stomp", "attackTime", Value and 0 or 7},
         {"Handstands", "repTime", Value and 0 or 1},
-        {"Pushups", "repTime", Value and 0 or 0.003},
+        {"Pushups", "repTime", Value and 0 or 0.1},
         {"Weight", "repTime", Value and 0 or 1},
         {"Situps", "repTime", Value and 0 or 1}
     }
@@ -1814,6 +1814,31 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local friendWhitelistActive = false
 
+Killer:AddSwitch("Auto Whitelist Friends", function(state)
+    friendWhitelistActive = state
+
+    if state then
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and LocalPlayer:IsFriendsWith(player.UserId) then
+                playerWhitelist[player.Name] = true
+            end
+        end
+
+        Players.PlayerAdded:Connect(function(player)
+            if friendWhitelistActive and player ~= LocalPlayer and LocalPlayer:IsFriendsWith(player.UserId) then
+                playerWhitelist[player.Name] = true
+            end
+        end)
+    else
+        for name in pairs(playerWhitelist) do
+            local friend = Players:FindFirstChild(name)
+            if friend and LocalPlayer:IsFriendsWith(friend.UserId) then
+                playerWhitelist[name] = nil
+            end
+        end
+    end
+end)
+
 Killer:AddTextBox("Whitelist", function(text)
     local target = Players:FindFirstChild(text)
     if target then
@@ -1821,11 +1846,17 @@ Killer:AddTextBox("Whitelist", function(text)
     end
 end)
 
+Killer:AddTextBox("UnWhitelist", function(text)
+    local target = Players:FindFirstChild(text)
+    if target then
+        playerWhitelist[target.Name] = nil
+    end
+end)
+
 Killer:AddButton("NaN Size", function()
     local args = {"changeSize", 0/0}
     game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("changeSpeedSizeRemote"):InvokeServer(unpack(args))
 end)
--- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã¢â‚¬Å“ Lista de RAWs a ejecutar
 local urls = {
     "https://raw.githubusercontent.com/SadOz8/Stuffs/refs/heads/main/Crack",
     "https://raw.githubusercontent.com/SadOz8/Stuffs/refs/heads/main/Crack2",
@@ -1866,41 +1897,9 @@ Killer:AddSwitch("Auto Kill", function(bool)
                 end
             end
 
-            task.wait(0.05)
+            task.wait(0.003)
         end
     end)
-end)
-
-Killer:AddTextBox("UnWhitelist", function(text)
-    local target = Players:FindFirstChild(text)
-    if target then
-        playerWhitelist[target.Name] = nil
-    end
-end)
-
-Killer:AddSwitch("Auto Whitelist Friends", function(state)
-    friendWhitelistActive = state
-
-    if state then
-        for _, player in ipairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and LocalPlayer:IsFriendsWith(player.UserId) then
-                playerWhitelist[player.Name] = true
-            end
-        end
-
-        Players.PlayerAdded:Connect(function(player)
-            if friendWhitelistActive and player ~= LocalPlayer and LocalPlayer:IsFriendsWith(player.UserId) then
-                playerWhitelist[player.Name] = true
-            end
-        end)
-    else
-        for name in pairs(playerWhitelist) do
-            local friend = Players:FindFirstChild(name)
-            if friend and LocalPlayer:IsFriendsWith(friend.UserId) then
-                playerWhitelist[name] = nil
-            end
-        end
-    end
 end)
 
 local targetDropdown = Killer:AddDropdown("Select Target", function(name)
@@ -1980,7 +1979,7 @@ Killer:AddSwitch("Start Kill Target", function(state)
                 end
             end
 
-            task.wait(0.05)
+            task.wait(0.003)
         end
     end)
 end)
@@ -2047,7 +2046,7 @@ Killer:AddSwitch("AutoHitNoAnim]", function(state)
 			else
 				autoPunchNoAnim = false
 			end
-			task.wait(0.01)
+			task.wait(0.003)
 		end
 	end)
 end)
@@ -2098,13 +2097,10 @@ Killer:AddSwitch("God Mode", function(State)
         end)
     end
 end)
--- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã¢â‚¬â„¢ Teleport / Follow System (versiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n auto-follow desde Dropdown)
 
--- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã¢â‚¬â„¢ Auto Follow (TP detrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s del jugador en vez de caminar)
 local following = false
 local followTarget = nil
 
--- FunciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n auxiliar: TP detrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s del jugador
 function followPlayer(targetPlayer)
     local myChar = LocalPlayer.Character
     local targetChar = targetPlayer.Character
@@ -2121,7 +2117,6 @@ function followPlayer(targetPlayer)
     end
 end
 
--- Dropdown dinÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡mico de jugadores
 local followDropdown = Killer:AddDropdown("Follow Player(TP)", function(selected)
     if selected and selected ~= "" then
         local target = Players:FindFirstChild(selected)
@@ -2130,20 +2125,17 @@ local followDropdown = Killer:AddDropdown("Follow Player(TP)", function(selected
             following = true
             print("Started following:", target.Name)
 
-            -- TP inmediato al seleccionarlo
             followPlayer(target)
         end
     end
 end)
 
--- Inicializar lista de jugadores
 for _, player in ipairs(Players:GetPlayers()) do
     if player ~= LocalPlayer then
         followDropdown:Add(player.Name)
     end
 end
 
--- Mantener lista actualizada
 Players.PlayerAdded:Connect(function(player)
     if player ~= LocalPlayer then
         followDropdown:Add(player.Name)
@@ -2163,14 +2155,12 @@ Players.PlayerRemoving:Connect(function(player)
     end
 end)
 
--- BotÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n para dejar de seguir
 Killer:AddButton("Unfollow", function()
     following = false
     followTarget = nil
     print("Stopped following")
 end)
 
--- Loop de seguimiento automÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡tico
 task.spawn(function()
     while true do
         task.wait(0.2) -- cada 0.2s para actualizar TP
@@ -2186,7 +2176,7 @@ task.spawn(function()
     end
 end)
 
-local godDamageActive = false
+local godDamageActive = true
 
 Killer:AddSwitch("Damage With Godmode", function(state)
     godDamageActive = state
@@ -2202,19 +2192,16 @@ Killer:AddSwitch("Damage With Godmode", function(state)
                         groundSlam.Parent = player.Character
                     end
 
-                    -- Quitar delay
                     if groundSlam:FindFirstChild("attackTime") then
                         groundSlam.attackTime.Value = 0
                     end
 
-                    -- Lanzar evento
                     player.muscleEvent:FireServer("slam")
 
-                    -- Activar herramienta
                     groundSlam:Activate()
                 end
 
-                task.wait(0.1) -- delay pequeÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±o
+                task.wait(0.1) 
             end
         end)
     end
@@ -3610,7 +3597,6 @@ local button = Killer:AddButton("freeze Water", function()
     WalkPart.Size = Vector3.new(20000,0,20000)
 end)
 
--- ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡Ãƒâ€šÃ‚Â¡ BotÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n que ejecuta todos los scripts remotos
 Killer:AddButton("Stick Dead", function()
     for _, url in ipairs(urls) do
         spawn(function()
@@ -3631,7 +3617,6 @@ Killer:AddButton("Stick Dead", function()
     end
 end)
 
--- Agregar opciones al dropdown dinÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡micamente
 for _, option in ipairs(timeOptions) do
     timeDropdown:Add(option)
 end
@@ -4371,7 +4356,7 @@ task.spawn(
     end
 )
 
-Gift:AddButton(
+Gift:AddSwitch(
     "Eat Everything",
     function(state)
         eatingRunning = state
