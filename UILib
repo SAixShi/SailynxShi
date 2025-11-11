@@ -4,9 +4,9 @@ local LocalPlayer = Players.LocalPlayer
 
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/SAixShi/speedhubx/refs/heads/main/library",true))()
 
-local window = library:AddWindow("Shi | Paid  by K13 Clan", {
+local window = library:AddWindow("Shi | Paid  By Sai", {
     main_color = Color3.fromRGB(80,0,130),
-    min_size = Vector2.new(600, 580),
+    min_size = Vector2.new(610, 830),
     can_resize = false
 })
 
@@ -4376,14 +4376,3 @@ Credits:AddLabel("SenXd")
 Credits:AddLabel("K13 Clan On Top")
 Credits:AddLabel("H3LL Clan On Top") 
 Credits:AddLabel("TANG INA NYO MGA BASURANG BINGOT 300ðŸ’² LANG TONG SCRIPT")
-
-local function forceResizeWindows(new_x, new_y)
-    for _, window in ipairs(Windows:GetChildren()) do
-        if window:IsA("ImageLabel") and window.Name == "Window" then
-            Resize(window, {Size = UDim2.new(0, new_x, 0, new_y)}, 0.1)
-        end
-    end
-end
-
-wait(1) 
-forceResizeWindows(600, 450)
