@@ -981,6 +981,7 @@ autoEquipToolsFolder:AddSwitch("PUSHUPS + ROCK FARM", function(bool)
     end
 end)
 
+
 -- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã¢â‚¬â„¢ NUEVO FOLDER ROCKS
 
 local folder = AutoFarm:AddFolder("Rock Farming")
