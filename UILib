@@ -914,52 +914,72 @@ autoEquipToolsFolder:AddSwitch("Fast Tools", function(Value)
 end)
 
 local LocalPlayer = game:GetService("Players").LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local AncientRockDurability = 10000000
+
+local function gettool()
+    local punchTool = LocalPlayer.Backpack:FindFirstChild("Punch")
+    if punchTool and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid:EquipTool(punchTool)
+    end
+    
+    ReplicatedStorage.rEvents.muscleEvent:FireServer("punch", "leftHand")
+    ReplicatedStorage.rEvents.muscleEvent:FireServer("punch", "rightHand")
+end
+
 
 autoEquipToolsFolder:AddSwitch("PUSHUPS + ROCK FARM", function(bool)
-    _G.AutoPushups = bool
     getgenv().autoFarm = bool
 
     if bool then
-        local pushupsTool = LocalPlayer.Backpack:FindFirstChild("Pushups")
-        if pushupsTool then
-            LocalPlayer.Character.Humanoid:EquipTool(pushupsTool)
-        end
+        gettool()
 
         task.spawn(function()
             while getgenv().autoFarm do
-                task.wait()
-
-                if _G.AutoPushups then
-                    LocalPlayer.muscleEvent:FireServer("rep")
+                if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("Humanoid") then
+                    task.wait(1)
+                    goto continue
                 end
                 
-                if LocalPlayer.Durability.Value >= 10000000 then
+                LocalPlayer.muscleEvent:FireServer("rep")
+                
+                if LocalPlayer.Durability.Value >= AncientRockDurability then
+                    local rockFound = false
+                    
                     for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-                        if v.Name == "neededDurability" and v.Value == 10000000 and
-                            LocalPlayer.Character:FindFirstChild("LeftHand") and
-                            LocalPlayer.Character:FindFirstChild("RightHand") then
-
+                        if v.Name == "neededDurability" and v.Value == AncientRockDurability then
                             local rock = v.Parent:FindFirstChild("Rock")
-                            if rock then
-                                firetouchinterest(rock, LocalPlayer.Character.RightHand, 0)
-                                firetouchinterest(rock, LocalPlayer.Character.RightHand, 1)
-                                firetouchinterest(rock, LocalPlayer.Character.LeftHand, 0)
-                                firetouchinterest(rock, LocalPlayer.Character.LeftHand, 1)
+                            local char = LocalPlayer.Character
+
+                            if rock and char and char:FindFirstChild("LeftHand") and char:FindFirstChild("RightHand") then
+                                
+                                firetouchinterest(rock, char.RightHand, 0)
+                                firetouchinterest(rock, char.RightHand, 1)
+                                firetouchinterest(rock, char.LeftHand, 0)
+                                firetouchinterest(rock, char.LeftHand, 1)
+                                
                                 gettool()
+                                rockFound = true
+                                break 
                             end
                         end
                     end
+                    
+                    task.wait(rockFound and 0.05 or 0.5)
+                else
+                    task.wait(0.1)
                 end
+                
+                ::continue::
             end
         end)
     else
-        local equipped = LocalPlayer.Character:FindFirstChild("Pushups")
-        if equipped then
-            equipped.Parent = LocalPlayer.Backpack
+        local equippedPunch = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Punch")
+        if equippedPunch then
+            equippedPunch.Parent = LocalPlayer.Backpack
         end
     end
 end)
-
 
 -- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã¢â‚¬â„¢ NUEVO FOLDER ROCKS
 
