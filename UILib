@@ -997,7 +997,7 @@ local function gettool()
             punchTool.attackTime.Value = 0 
         end
         LocalPlayer.Character.Humanoid:EquipTool(punchTool)
-        task.wait()
+        task.wait() -- Pinakamabilis na task.wait()
     end
     LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
     LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
@@ -1018,19 +1018,19 @@ local legendGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Legend Gym Rock", 
  
     if bool then
         local targetRock = findRock(LEGEND_ROCK_DURABILITY)
-        if not targetRock then return end
+        if not targetRock then return end 
 
         spawn(function()
             while getgenv().autoFarm do
                 
-                task.wait(0.01)
+                task.wait(0) 
 
                 if LocalPlayer.Durability.Value >= LEGEND_ROCK_DURABILITY then
                     local char = LocalPlayer.Character
                     if char and char:FindFirstChild("LeftHand") and char:FindFirstChild("RightHand") then
                         local rightHand = char.RightHand
                         local leftHand = char.LeftHand
-                        
+
                         firetouchinterest(targetRock, rightHand, 0)
                         firetouchinterest(targetRock, rightHand, 1)
                         firetouchinterest(targetRock, leftHand, 0)
@@ -1054,7 +1054,7 @@ local muscleKingGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Muscle King Gy
         spawn(function()
             while getgenv().autoFarm do
                 
-                task.wait(0.01)
+                task.wait(0) 
 
                 if LocalPlayer.Durability.Value >= MUSCLEKING_ROCK_DURABILITY then
                     local char = LocalPlayer.Character
@@ -1085,7 +1085,7 @@ local ancientJungleRockSwitch = RockFarmingFolder:AddSwitch("Farm Ancient Jungle
         spawn(function()
             while getgenv().autoFarm do
                 
-                task.wait(0.01)
+                task.wait(0) 
 
                 if LocalPlayer.Durability.Value >= ANCIENT_ROCK_DURABILITY then
                     local char = LocalPlayer.Character
