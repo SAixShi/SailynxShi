@@ -927,7 +927,7 @@ local function gettool()
     LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
 end
 
-autoEquipToolsFolder:AddSwitch("Pushups + Rock Farm (Time-Share)", function(bool)
+autoEquipToolsFolder:AddSwitch("Pushups + Rock Farm (Tang Ina Mo)", function(bool)
     getgenv().autoFarmUnified = bool
  
     if bool then
@@ -941,13 +941,13 @@ autoEquipToolsFolder:AddSwitch("Pushups + Rock Farm (Time-Share)", function(bool
                 end
                 
                 local pushupStartTime = tick()
-                while tick() - pushupStartTime < 1 and getgenv().autoFarmUnified do
+                while tick() - pushupStartTime < 0.01 and getgenv().autoFarmUnified do
                     LocalPlayer.muscleEvent:FireServer("rep") 
-                    task.wait(0.05)
+                    task.wait(0.01)
                 end
                 
                 local rockPunchStartTime = tick()
-                while tick() - rockPunchStartTime < 4 and getgenv().autoFarmUnified do
+                while tick() - rockPunchStartTime < 0.01 and getgenv().autoFarmUnified do
                     
                     if LocalPlayer.Durability.Value >= AncientRockDurability then
                         local rockFound = false
