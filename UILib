@@ -986,142 +986,125 @@ end)
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local RockFarmingFolder = AutoFarm:AddFolder("Rock Farming")
 
--- Ang gettool() function ay inalis ang equip time at inalis ang task.wait()
+-- I-define ang mga Durability Values para mas malinis ang code
+local LEGEND_ROCK_DURABILITY = 1000000
+local MUSCLEKING_ROCK_DURABILITY = 5000000
+local ANCIENT_ROCK_DURABILITY = 10000000
+
+-- Optimized gettool function (Walang task.wait() na nagpapabagal)
 local function gettool()
     local punchTool = LocalPlayer.Backpack:FindFirstChild("Punch")
     if punchTool and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-        -- Mabilis na i-inject ang Fast Tool setting (kung wala pa)
         if punchTool:FindFirstChild("attackTime") then
-            punchTool.attackTime.Value = 0
+            punchTool.attackTime.Value = 0 -- Siguradong Fast Tool
         end
         LocalPlayer.Character.Humanoid:EquipTool(punchTool)
-        task.wait() -- Pinakamabilis na wait para sa equip
+        task.wait() -- Pinakamabilis na task.wait()
     end
     LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
     LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
 end
 
--- I-update ang lahat ng Rock Farm switches gamit ang optimized loop
--- Eto ang Legend Gym Rock
-local legendGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Legend Gym Rock", function(bool)
+-- Function para hanapin ang Rock nang isang beses lang (Caching)
+local function findRock(durability)
+    for _, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+        if v.Name == "neededDurability" and v.Value == durability then
+            return v.Parent.Rock
+        end
+    end
+    return nil
+end
+
+local legendGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Legend Gym Rock (MAX GLITCH)", function(bool)
     selectrock = "Legend Gym Rock"
     getgenv().autoFarm = bool
  
     if bool then
+        local targetRock = findRock(LEGEND_ROCK_DURABILITY)
+        if not targetRock then return end -- Kung walang rock, huwag mag-start
+
         spawn(function()
             while getgenv().autoFarm do
                 
-                -- Ginamit ang pinakamabilis na task.wait()
-                task.wait() 
-                
-                if LocalPlayer.Durability.Value >= 1000000 then
-                    local rockFound = false
-                    for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-                        if v.Name == "neededDurability" and v.Value == 1000000 and 
-                            LocalPlayer.Character:FindFirstChild("LeftHand") and 
-                            LocalPlayer.Character:FindFirstChild("RightHand") then
-                            
-                            local rock = v.Parent.Rock
-                            local rightHand = LocalPlayer.Character.RightHand
-                            local leftHand = LocalPlayer.Character.LeftHand
-                            
-                            firetouchinterest(rock, rightHand, 0)
-                            firetouchinterest(rock, rightHand, 1)
-                            firetouchinterest(rock, leftHand, 0)
-                            firetouchinterest(rock, leftHand, 1)
-                            gettool()
-                            
-                            rockFound = true
-                            -- HINDI na maghahanap ng ibang rock, agad-agad na mag-loop
-                            break 
-                        end
+                task.wait(0) -- MAX SPEED LOOP
+
+                if LocalPlayer.Durability.Value >= LEGEND_ROCK_DURABILITY then
+                    local char = LocalPlayer.Character
+                    if char and char:FindFirstChild("LeftHand") and char:FindFirstChild("RightHand") then
+                        local rightHand = char.RightHand
+                        local leftHand = char.LeftHand
+                        
+                        -- PURE SPAM HITS
+                        firetouchinterest(targetRock, rightHand, 0)
+                        firetouchinterest(targetRock, rightHand, 1)
+                        firetouchinterest(targetRock, leftHand, 0)
+                        firetouchinterest(targetRock, leftHand, 1)
+                        gettool()
                     end
-                    -- task.wait() dito ay mas mabilis na. Kung hindi mahanap ang rock, magpapatuloy.
-                    task.wait(rockFound and 0.005 or 0.1) 
-                else
-                    task.wait(0.1)
                 end
             end
         end)
     end
 end)
 
--- Eto ang Muscle King Gym Rock
-local muscleKingGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Muscle King Gym Rock", function(bool)
+local muscleKingGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Muscle King Gym Rock (MAX GLITCH)", function(bool)
     selectrock = "Muscle King Gym Rock"
     getgenv().autoFarm = bool
  
     if bool then
+        local targetRock = findRock(MUSCLEKING_ROCK_DURABILITY)
+        if not targetRock then return end
+
         spawn(function()
             while getgenv().autoFarm do
                 
-                task.wait() 
-                
-                if LocalPlayer.Durability.Value >= 5000000 then
-                    local rockFound = false
-                    for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-                        if v.Name == "neededDurability" and v.Value == 5000000 and 
-                            LocalPlayer.Character:FindFirstChild("LeftHand") and 
-                            LocalPlayer.Character:FindFirstChild("RightHand") then
-                            
-                            local rock = v.Parent.Rock
-                            local rightHand = LocalPlayer.Character.RightHand
-                            local leftHand = LocalPlayer.Character.LeftHand
-                            
-                            firetouchinterest(rock, rightHand, 0)
-                            firetouchinterest(rock, rightHand, 1)
-                            firetouchinterest(rock, leftHand, 0)
-                            firetouchinterest(rock, leftHand, 1)
-                            gettool()
-                            
-                            rockFound = true
-                            break 
-                        end
+                task.wait(0) -- MAX SPEED LOOP
+
+                if LocalPlayer.Durability.Value >= MUSCLEKING_ROCK_DURABILITY then
+                    local char = LocalPlayer.Character
+                    if char and char:FindFirstChild("LeftHand") and char:FindFirstChild("RightHand") then
+                        local rightHand = char.RightHand
+                        local leftHand = char.LeftHand
+                        
+                        -- PURE SPAM HITS
+                        firetouchinterest(targetRock, rightHand, 0)
+                        firetouchinterest(targetRock, rightHand, 1)
+                        firetouchinterest(targetRock, leftHand, 0)
+                        firetouchinterest(targetRock, leftHand, 1)
+                        gettool()
                     end
-                    task.wait(rockFound and 0.005 or 0.1)
-                else
-                    task.wait(0.1)
                 end
             end
         end)
     end
 end)
 
--- Eto ang Ancient Jungle Rock
-local ancientJungleRockSwitch = RockFarmingFolder:AddSwitch("Farm Ancient Jungle Rock", function(bool)
+local ancientJungleRockSwitch = RockFarmingFolder:AddSwitch("Farm Ancient Jungle Rock (MAX GLITCH)", function(bool)
     selectrock = "Ancient Jungle Rock"
     getgenv().autoFarm = bool
  
     if bool then
+        local targetRock = findRock(ANCIENT_ROCK_DURABILITY)
+        if not targetRock then return end
+
         spawn(function()
             while getgenv().autoFarm do
                 
-                task.wait() 
-                
-                if LocalPlayer.Durability.Value >= 10000000 then
-                    local rockFound = false
-                    for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-                        if v.Name == "neededDurability" and v.Value == 10000000 and 
-                            LocalPlayer.Character:FindFirstChild("LeftHand") and 
-                            LocalPlayer.Character:FindFirstChild("RightHand") then
-                            
-                            local rock = v.Parent.Rock
-                            local rightHand = LocalPlayer.Character.RightHand
-                            local leftHand = LocalPlayer.Character.LeftHand
-                            
-                            firetouchinterest(rock, rightHand, 0)
-                            firetouchinterest(rock, rightHand, 1)
-                            firetouchinterest(rock, leftHand, 0)
-                            firetouchinterest(rock, leftHand, 1)
-                            gettool()
-                            
-                            rockFound = true
-                            break 
-                        end
+                task.wait(0) -- MAX SPEED LOOP
+
+                if LocalPlayer.Durability.Value >= ANCIENT_ROCK_DURABILITY then
+                    local char = LocalPlayer.Character
+                    if char and char:FindFirstChild("LeftHand") and char:FindFirstChild("RightHand") then
+                        local rightHand = char.RightHand
+                        local leftHand = char.LeftHand
+                        
+                        -- PURE SPAM HITS
+                        firetouchinterest(targetRock, rightHand, 0)
+                        firetouchinterest(targetRock, rightHand, 1)
+                        firetouchinterest(targetRock, leftHand, 0)
+                        firetouchinterest(targetRock, leftHand, 1)
+                        gettool()
                     end
-                    task.wait(rockFound and 0.005 or 0.1)
-                else
-                    task.wait(0.1)
                 end
             end
         end)
