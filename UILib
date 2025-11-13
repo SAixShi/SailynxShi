@@ -1018,7 +1018,7 @@ local function startRockFarm(rockName, durability)
         local char = LocalPlayer.Character
         while getgenv().autoFarm and char do
             
-            task.wait(0) 
+            task.wait(0.01) -- Stable Speed
 
             if LocalPlayer.Durability.Value >= durability then
                 if char:FindFirstChild("LeftHand") and char:FindFirstChild("RightHand") then
@@ -1031,6 +1031,8 @@ local function startRockFarm(rockName, durability)
                     firetouchinterest(targetRock, leftHand, 1)
                     LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
                     
+                    task.wait(0.01)
+                    
                     firetouchinterest(targetRock, rightHand, 0)
                     firetouchinterest(targetRock, rightHand, 1)
                     LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
@@ -1040,7 +1042,7 @@ local function startRockFarm(rockName, durability)
     end)
 end
 
-local legendGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Legend Gym Rock (ULTIMATE SPEED)", function(bool)
+local legendGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Legend Gym Rock", function(bool)
     selectrock = "Legend Gym Rock"
     getgenv().autoFarm = bool
     if bool then
@@ -1048,7 +1050,7 @@ local legendGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Legend Gym Rock (U
     end
 end)
 
-local muscleKingGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Muscle King Gym Rock (ULTIMATE SPEED)", function(bool)
+local muscleKingGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Muscle King Gym Rock", function(bool)
     selectrock = "Muscle King Gym Rock"
     getgenv().autoFarm = bool
     if bool then
@@ -1056,7 +1058,7 @@ local muscleKingGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Muscle King Gy
     end
 end)
 
-local ancientJungleRockSwitch = RockFarmingFolder:AddSwitch("Farm Ancient Jungle Rock (ULTIMATE SPEED)", function(bool)
+local ancientJungleRockSwitch = RockFarmingFolder:AddSwitch("Farm Ancient Jungle Rock", function(bool)
     selectrock = "Ancient Jungle Rock"
     getgenv().autoFarm = bool
     if bool then
