@@ -953,12 +953,11 @@ end
 
 applyFastTools()
 
-local folder = AutoFarm:AddFolder("Rock Farming")
-
 local function gettool()
     for i, v in pairs(LocalPlayer.Backpack:GetChildren()) do
         if v.Name == "Punch" and LocalPlayer.Character:FindFirstChild("Humanoid") then
             LocalPlayer.Character.Humanoid:EquipTool(v)
+            task.wait(0.1) -- ADDED DELAY: Maghintay sandali bago mag-punch
         end
     end
     LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
@@ -974,10 +973,8 @@ local ancientJungleRockSwitch = folder:AddSwitch("Farm Ancient Jungle Rock + Pus
         spawn(function()
             while getgenv().autoFarm do
                 
-                -- PUSHUPS FUNCTION
                 LocalPlayer.muscleEvent:FireServer("rep") 
 
-                -- ROCK PUNCH FUNCTION
                 if LocalPlayer.Durability.Value >= AncientRockDurability then
                     local rockFound = false
                     
