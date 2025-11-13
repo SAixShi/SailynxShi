@@ -940,7 +940,10 @@ autoEquipToolsFolder:AddSwitch("Pushups + Rock Farm (Unified)", function(bool)
                     LocalPlayer.Character.Humanoid:EquipTool(pushupsTool)
                 end
                 
-                LocalPlayer.muscleEvent:FireServer("rep") 
+                for i = 1, 5 do
+                    LocalPlayer.muscleEvent:FireServer("rep") 
+                    task.wait()
+                end
                 
                 if LocalPlayer.Durability.Value >= AncientRockDurability then
                     local rockFound = false
