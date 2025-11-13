@@ -917,61 +917,27 @@ local LocalPlayer = game:GetService("Players").LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local AncientRockDurability = 10000000
 
-local function applyFastTools()
-    local toolSettings = {
-        {"Punch", "attackTime", 0},
-        {"Pushups", "repTime", 0},
-        {"Weight", "repTime", 0},
-        {"Handstands", "repTime", 0},
-        {"Situps", "repTime", 0}
-    }
-    
-    local backpack = LocalPlayer.Backpack
-    local character = LocalPlayer.Character
-    
-    for _, toolInfo in ipairs(toolSettings) do
-        local toolName = toolInfo[1]
-        local valueName = toolInfo[2]
-
-        local toolInBackpack = backpack:FindFirstChild(toolName)
-        if toolInBackpack then
-            local valueObject = toolInBackpack:FindFirstChild(valueName)
-            if valueObject then
-                valueObject.Value = 0
-            end
-        end
-
-        local equippedTool = character and character:FindFirstChild(toolName)
-        if equippedTool then
-            local valueObject = equippedTool:FindFirstChild(valueName)
-            if valueObject then
-                valueObject.Value = 0
-            end
-        end
-    end
-end
-
-applyFastTools()
-
 local function gettool()
-    for i, v in pairs(LocalPlayer.Backpack:GetChildren()) do
-        if v.Name == "Punch" and LocalPlayer.Character:FindFirstChild("Humanoid") then
-            LocalPlayer.Character.Humanoid:EquipTool(v)
-            task.wait(0.1) -- ADDED DELAY: Maghintay sandali bago mag-punch
-        end
+    local punchTool = LocalPlayer.Backpack:FindFirstChild("Punch")
+    if punchTool and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid:EquipTool(punchTool)
+        task.wait(0.01)
     end
     LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
     LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
 end
 
-local ancientJungleRockSwitch = folder:AddSwitch("Farm Ancient Jungle Rock + Pushups", function(bool)
-    getgenv().autoFarm = bool
+autoEquipToolsFolder:AddSwitch("Pushups + Rock Farm", function(bool)
+    getgenv().autoFarmUnified = bool
  
     if bool then
-        applyFastTools() 
-        
-        spawn(function()
-            while getgenv().autoFarm do
+        local equippedPushups = LocalPlayer.Character:FindFirstChild("Pushups")
+        if equippedPushups then
+            equippedPushups.Parent = LocalPlayer.Backpack
+        end
+
+        task.spawn(function()
+            while getgenv().autoFarmUnified do
                 
                 LocalPlayer.muscleEvent:FireServer("rep") 
 
@@ -996,15 +962,13 @@ local ancientJungleRockSwitch = folder:AddSwitch("Farm Ancient Jungle Rock + Pus
                             end
                         end
                     end
-                    task.wait(rockFound and 0.05 or 0.5) 
+                    task.wait(rockFound and 0.01 or 0.0003) 
                 else
                     task.wait(0.1)
                 end
             end
         end)
-    end
-    
-    if not bool then
+    else
         local equippedPunch = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Punch")
         if equippedPunch then
             equippedPunch.Parent = LocalPlayer.Backpack
