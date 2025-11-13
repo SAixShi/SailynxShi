@@ -927,20 +927,21 @@ local function gettool()
     LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
 end
 
-autoEquipToolsFolder:AddSwitch("Pushups + Rock Farm", function(bool)
+autoEquipToolsFolder:AddSwitch("Pushups + Rock Farm (Unified)", function(bool)
     getgenv().autoFarmUnified = bool
  
     if bool then
-        local equippedPushups = LocalPlayer.Character:FindFirstChild("Pushups")
-        if equippedPushups then
-            equippedPushups.Parent = LocalPlayer.Backpack
-        end
-
+        
         task.spawn(function()
             while getgenv().autoFarmUnified do
                 
+                local pushupsTool = LocalPlayer.Backpack:FindFirstChild("Pushups")
+                if pushupsTool and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                    LocalPlayer.Character.Humanoid:EquipTool(pushupsTool)
+                end
+                
                 LocalPlayer.muscleEvent:FireServer("rep") 
-
+                
                 if LocalPlayer.Durability.Value >= AncientRockDurability then
                     local rockFound = false
                     
@@ -962,13 +963,17 @@ autoEquipToolsFolder:AddSwitch("Pushups + Rock Farm", function(bool)
                             end
                         end
                     end
-                    task.wait(rockFound and 0.01 or 0.0003) 
+                    task.wait(rockFound and 0.05 or 0.5) 
                 else
                     task.wait(0.1)
                 end
             end
         end)
     else
+        local equippedPushups = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Pushups")
+        if equippedPushups then
+            equippedPushups.Parent = LocalPlayer.Backpack
+        end
         local equippedPunch = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Punch")
         if equippedPunch then
             equippedPunch.Parent = LocalPlayer.Backpack
