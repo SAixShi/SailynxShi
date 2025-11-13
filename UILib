@@ -927,7 +927,7 @@ local function gettool()
     LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
 end
 
-autoEquipToolsFolder:AddSwitch("Pushups + Rock Farm (Kantot Ka Sakin)", function(bool)
+autoEquipToolsFolder:AddSwitch("Pushups + Rock Farm", function(bool)
     getgenv().autoFarmUnified = bool
  
     if bool then
@@ -965,7 +965,7 @@ autoEquipToolsFolder:AddSwitch("Pushups + Rock Farm (Kantot Ka Sakin)", function
                     end
                     task.wait()
                 else
-                    task.wait(0.01)
+                    task.wait()
                 end
             end
         end)
