@@ -986,26 +986,23 @@ end)
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local RockFarmingFolder = AutoFarm:AddFolder("Rock Farming")
 
--- I-define ang mga Durability Values para mas malinis ang code
 local LEGEND_ROCK_DURABILITY = 1000000
 local MUSCLEKING_ROCK_DURABILITY = 5000000
 local ANCIENT_ROCK_DURABILITY = 10000000
 
--- Optimized gettool function (Walang task.wait() na nagpapabagal)
 local function gettool()
     local punchTool = LocalPlayer.Backpack:FindFirstChild("Punch")
     if punchTool and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
         if punchTool:FindFirstChild("attackTime") then
-            punchTool.attackTime.Value = 0 -- Siguradong Fast Tool
+            punchTool.attackTime.Value = 0 
         end
         LocalPlayer.Character.Humanoid:EquipTool(punchTool)
-        task.wait() -- Pinakamabilis na task.wait()
+        task.wait()
     end
     LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
     LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
 end
 
--- Function para hanapin ang Rock nang isang beses lang (Caching)
 local function findRock(durability)
     for _, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
         if v.Name == "neededDurability" and v.Value == durability then
@@ -1015,18 +1012,18 @@ local function findRock(durability)
     return nil
 end
 
-local legendGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Legend Gym Rock (MAX GLITCH)", function(bool)
+local legendGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Legend Gym Rock", function(bool)
     selectrock = "Legend Gym Rock"
     getgenv().autoFarm = bool
  
     if bool then
         local targetRock = findRock(LEGEND_ROCK_DURABILITY)
-        if not targetRock then return end -- Kung walang rock, huwag mag-start
+        if not targetRock then return end
 
         spawn(function()
             while getgenv().autoFarm do
                 
-                task.wait(0) -- MAX SPEED LOOP
+                task.wait(0.005)
 
                 if LocalPlayer.Durability.Value >= LEGEND_ROCK_DURABILITY then
                     local char = LocalPlayer.Character
@@ -1034,7 +1031,6 @@ local legendGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Legend Gym Rock (M
                         local rightHand = char.RightHand
                         local leftHand = char.LeftHand
                         
-                        -- PURE SPAM HITS
                         firetouchinterest(targetRock, rightHand, 0)
                         firetouchinterest(targetRock, rightHand, 1)
                         firetouchinterest(targetRock, leftHand, 0)
@@ -1047,7 +1043,7 @@ local legendGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Legend Gym Rock (M
     end
 end)
 
-local muscleKingGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Muscle King Gym Rock (MAX GLITCH)", function(bool)
+local muscleKingGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Muscle King Gym Rock", function(bool)
     selectrock = "Muscle King Gym Rock"
     getgenv().autoFarm = bool
  
@@ -1058,7 +1054,7 @@ local muscleKingGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Muscle King Gy
         spawn(function()
             while getgenv().autoFarm do
                 
-                task.wait(0) -- MAX SPEED LOOP
+                task.wait(0.005)
 
                 if LocalPlayer.Durability.Value >= MUSCLEKING_ROCK_DURABILITY then
                     local char = LocalPlayer.Character
@@ -1066,7 +1062,6 @@ local muscleKingGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Muscle King Gy
                         local rightHand = char.RightHand
                         local leftHand = char.LeftHand
                         
-                        -- PURE SPAM HITS
                         firetouchinterest(targetRock, rightHand, 0)
                         firetouchinterest(targetRock, rightHand, 1)
                         firetouchinterest(targetRock, leftHand, 0)
@@ -1079,7 +1074,7 @@ local muscleKingGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Muscle King Gy
     end
 end)
 
-local ancientJungleRockSwitch = RockFarmingFolder:AddSwitch("Farm Ancient Jungle Rock (MAX GLITCH)", function(bool)
+local ancientJungleRockSwitch = RockFarmingFolder:AddSwitch("Farm Ancient Jungle Rock", function(bool)
     selectrock = "Ancient Jungle Rock"
     getgenv().autoFarm = bool
  
@@ -1090,7 +1085,7 @@ local ancientJungleRockSwitch = RockFarmingFolder:AddSwitch("Farm Ancient Jungle
         spawn(function()
             while getgenv().autoFarm do
                 
-                task.wait(0) -- MAX SPEED LOOP
+                task.wait(0.005)
 
                 if LocalPlayer.Durability.Value >= ANCIENT_ROCK_DURABILITY then
                     local char = LocalPlayer.Character
@@ -1098,7 +1093,6 @@ local ancientJungleRockSwitch = RockFarmingFolder:AddSwitch("Farm Ancient Jungle
                         local rightHand = char.RightHand
                         local leftHand = char.LeftHand
                         
-                        -- PURE SPAM HITS
                         firetouchinterest(targetRock, rightHand, 0)
                         firetouchinterest(targetRock, rightHand, 1)
                         firetouchinterest(targetRock, leftHand, 0)
