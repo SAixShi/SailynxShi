@@ -997,8 +997,10 @@ local function gettool()
             punchTool.attackTime.Value = 0 
         end
         LocalPlayer.Character.Humanoid:EquipTool(punchTool)
-        task.wait() 
+        task.wait()
     end
+    LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
+    LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
 end
 
 local function findRock(durability)
@@ -1010,59 +1012,96 @@ local function findRock(durability)
     return nil
 end
 
-local function startRockFarm(rockName, durability)
-    local targetRock = findRock(durability)
-    if not targetRock then return end
-
-    spawn(function()
-        local char = LocalPlayer.Character
-        while getgenv().autoFarm and char do
-            
-            task.wait(0.01) -- Stable Speed
-
-            if LocalPlayer.Durability.Value >= durability then
-                if char:FindFirstChild("LeftHand") and char:FindFirstChild("RightHand") then
-                    local rightHand = char.RightHand
-                    local leftHand = char.Character.LeftHand
-                    
-                    gettool() 
-                    
-                    firetouchinterest(targetRock, leftHand, 0)
-                    firetouchinterest(targetRock, leftHand, 1)
-                    LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
-                    
-                    task.wait(0.01)
-                    
-                    firetouchinterest(targetRock, rightHand, 0)
-                    firetouchinterest(targetRock, rightHand, 1)
-                    LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
-                end
-            end
-        end
-    end)
-end
-
 local legendGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Legend Gym Rock", function(bool)
     selectrock = "Legend Gym Rock"
     getgenv().autoFarm = bool
+ 
     if bool then
-        startRockFarm("Legend Gym Rock", LEGEND_ROCK_DURABILITY)
+        local targetRock = findRock(LEGEND_ROCK_DURABILITY)
+        if not targetRock then return end
+
+        spawn(function()
+            while getgenv().autoFarm do
+                
+                task.wait(0.01)
+
+                if LocalPlayer.Durability.Value >= LEGEND_ROCK_DURABILITY then
+                    local char = LocalPlayer.Character
+                    if char and char:FindFirstChild("LeftHand") and char:FindFirstChild("RightHand") then
+                        local rightHand = char.RightHand
+                        local leftHand = char.LeftHand
+                        
+                        firetouchinterest(targetRock, rightHand, 0)
+                        firetouchinterest(targetRock, rightHand, 1)
+                        firetouchinterest(targetRock, leftHand, 0)
+                        firetouchinterest(targetRock, leftHand, 1)
+                        gettool()
+                    end
+                end
+            end
+        end)
     end
 end)
 
 local muscleKingGymRockSwitch = RockFarmingFolder:AddSwitch("Farm Muscle King Gym Rock", function(bool)
     selectrock = "Muscle King Gym Rock"
     getgenv().autoFarm = bool
+ 
     if bool then
-        startRockFarm("Muscle King Gym Rock", MUSCLEKING_ROCK_DURABILITY)
+        local targetRock = findRock(MUSCLEKING_ROCK_DURABILITY)
+        if not targetRock then return end
+
+        spawn(function()
+            while getgenv().autoFarm do
+                
+                task.wait(0.01)
+
+                if LocalPlayer.Durability.Value >= MUSCLEKING_ROCK_DURABILITY then
+                    local char = LocalPlayer.Character
+                    if char and char:FindFirstChild("LeftHand") and char:FindFirstChild("RightHand") then
+                        local rightHand = char.RightHand
+                        local leftHand = char.LeftHand
+                        
+                        firetouchinterest(targetRock, rightHand, 0)
+                        firetouchinterest(targetRock, rightHand, 1)
+                        firetouchinterest(targetRock, leftHand, 0)
+                        firetouchinterest(targetRock, leftHand, 1)
+                        gettool()
+                    end
+                end
+            end
+        end)
     end
 end)
 
 local ancientJungleRockSwitch = RockFarmingFolder:AddSwitch("Farm Ancient Jungle Rock", function(bool)
     selectrock = "Ancient Jungle Rock"
     getgenv().autoFarm = bool
+ 
     if bool then
-        startRockFarm("Ancient Jungle Rock", ANCIENT_ROCK_DURABILITY)
+        local targetRock = findRock(ANCIENT_ROCK_DURABILITY)
+        if not targetRock then return end
+
+        spawn(function()
+            while getgenv().autoFarm do
+                
+                task.wait(0.01)
+
+                if LocalPlayer.Durability.Value >= ANCIENT_ROCK_DURABILITY then
+                    local char = LocalPlayer.Character
+                    if char and char:FindFirstChild("LeftHand") and char:FindFirstChild("RightHand") then
+                        local rightHand = char.RightHand
+                        local leftHand = char.LeftHand
+                        
+                        firetouchinterest(targetRock, rightHand, 0)
+                        firetouchinterest(targetRock, rightHand, 1)
+                        firetouchinterest(targetRock, leftHand, 0)
+                        firetouchinterest(targetRock, leftHand, 1)
+                        gettool()
+                    end
+                end
+            end
+        end)
     end
 end)
 
