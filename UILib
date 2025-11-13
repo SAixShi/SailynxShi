@@ -918,11 +918,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local AncientRockDurability = 10000000
 
 local function gettool()
-    local punchTool = LocalPlayer.Backpack:FindFirstChild("Punch")
-    if punchTool and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-        LocalPlayer.Character.Humanoid:EquipTool(punchTool)
-        task.wait(0.01)
-    end
     LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
     LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
 end
@@ -931,19 +926,15 @@ autoEquipToolsFolder:AddSwitch("Pushups + Rock Farm (Unified)", function(bool)
     getgenv().autoFarmUnified = bool
  
     if bool then
+        local equippedPushups = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Pushups")
+        if equippedPushups then equippedPushups.Parent = LocalPlayer.Backpack end
+        local equippedPunch = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Punch")
+        if equippedPunch then equippedPunch.Parent = LocalPlayer.Backpack end
         
         task.spawn(function()
             while getgenv().autoFarmUnified do
                 
-                local pushupsTool = LocalPlayer.Backpack:FindFirstChild("Pushups")
-                if pushupsTool and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-                    LocalPlayer.Character.Humanoid:EquipTool(pushupsTool)
-                end
-                
-                for i = 1, 5 do
-                    LocalPlayer.muscleEvent:FireServer("rep") 
-                    task.wait()
-                end
+                LocalPlayer.muscleEvent:FireServer("rep") 
                 
                 if LocalPlayer.Durability.Value >= AncientRockDurability then
                     local rockFound = false
@@ -960,7 +951,7 @@ autoEquipToolsFolder:AddSwitch("Pushups + Rock Farm (Unified)", function(bool)
                                 firetouchinterest(rock, char.LeftHand, 0)
                                 firetouchinterest(rock, char.LeftHand, 1)
                                 
-                                gettool()
+                                gettool() 
                                 rockFound = true
                                 break
                             end
@@ -968,19 +959,15 @@ autoEquipToolsFolder:AddSwitch("Pushups + Rock Farm (Unified)", function(bool)
                     end
                     task.wait(rockFound and 0.05 or 0.5) 
                 else
-                    task.wait(0.1)
+                    task.wait(0.01)
                 end
             end
         end)
     else
         local equippedPushups = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Pushups")
-        if equippedPushups then
-            equippedPushups.Parent = LocalPlayer.Backpack
-        end
+        if equippedPushups then equippedPushups.Parent = LocalPlayer.Backpack end
         local equippedPunch = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Punch")
-        if equippedPunch then
-            equippedPunch.Parent = LocalPlayer.Backpack
-        end
+        if equippedPunch then equippedPunch.Parent = LocalPlayer.Backpack end
     end
 end)
 
