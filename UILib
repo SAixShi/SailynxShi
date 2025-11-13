@@ -893,7 +893,7 @@ autoEquipToolsFolder:AddSwitch("Fast Tools", function(Value)
         {"Ground Slam", "attackTime", Value and 0 or 6},
         {"Stomp", "attackTime", Value and 0 or 7},
         {"Handstands", "repTime", Value and 0 or 1},
-        {"Pushups", "repTime", Value and 0 or 0.1},
+        {"Pushups", "repTime", Value and 0 or 0.01},
         {"Weight", "repTime", Value and 0 or 1},
         {"Situps", "repTime", Value and 0 or 1}
     }
@@ -909,6 +909,108 @@ autoEquipToolsFolder:AddSwitch("Fast Tools", function(Value)
         local equippedTool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild(toolInfo[1])
         if equippedTool and equippedTool:FindFirstChild(toolInfo[2]) then
             equippedTool[toolInfo[2]].Value = toolInfo[3]
+        end
+    end
+end)
+
+local LocalPlayer = game:GetService("Players").LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local AncientRockDurability = 10000000
+
+local function applyFastTools()
+    local toolSettings = {
+        {"Punch", "attackTime", 0},
+        {"Pushups", "repTime", 0},
+        {"Weight", "repTime", 0},
+        {"Handstands", "repTime", 0},
+        {"Situps", "repTime", 0}
+    }
+    
+    local backpack = LocalPlayer.Backpack
+    local character = LocalPlayer.Character
+    
+    for _, toolInfo in ipairs(toolSettings) do
+        local toolName = toolInfo[1]
+        local valueName = toolInfo[2]
+
+        local toolInBackpack = backpack:FindFirstChild(toolName)
+        if toolInBackpack then
+            local valueObject = toolInBackpack:FindFirstChild(valueName)
+            if valueObject then
+                valueObject.Value = 0
+            end
+        end
+
+        local equippedTool = character and character:FindFirstChild(toolName)
+        if equippedTool then
+            local valueObject = equippedTool:FindFirstChild(valueName)
+            if valueObject then
+                valueObject.Value = 0
+            end
+        end
+    end
+end
+
+applyFastTools()
+
+local folder = AutoFarm:AddFolder("Rock Farming")
+
+local function gettool()
+    for i, v in pairs(LocalPlayer.Backpack:GetChildren()) do
+        if v.Name == "Punch" and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            LocalPlayer.Character.Humanoid:EquipTool(v)
+        end
+    end
+    LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
+    LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
+end
+
+local ancientJungleRockSwitch = folder:AddSwitch("Farm Ancient Jungle Rock + Pushups", function(bool)
+    getgenv().autoFarm = bool
+ 
+    if bool then
+        applyFastTools() 
+        
+        spawn(function()
+            while getgenv().autoFarm do
+                
+                -- PUSHUPS FUNCTION
+                LocalPlayer.muscleEvent:FireServer("rep") 
+
+                -- ROCK PUNCH FUNCTION
+                if LocalPlayer.Durability.Value >= AncientRockDurability then
+                    local rockFound = false
+                    
+                    for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+                        if v.Name == "neededDurability" and v.Value == AncientRockDurability then 
+                            local rock = v.Parent:FindFirstChild("Rock")
+                            local char = LocalPlayer.Character
+                            
+                            if rock and char and char:FindFirstChild("LeftHand") and char:FindFirstChild("RightHand") then
+                                
+                                firetouchinterest(rock, char.RightHand, 0)
+                                firetouchinterest(rock, char.RightHand, 1)
+                                firetouchinterest(rock, char.LeftHand, 0)
+                                firetouchinterest(rock, char.LeftHand, 1)
+                                
+                                gettool()
+                                rockFound = true
+                                break
+                            end
+                        end
+                    end
+                    task.wait(rockFound and 0.05 or 0.5) 
+                else
+                    task.wait(0.1)
+                end
+            end
+        end)
+    end
+    
+    if not bool then
+        local equippedPunch = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Punch")
+        if equippedPunch then
+            equippedPunch.Parent = LocalPlayer.Backpack
         end
     end
 end)
