@@ -1711,7 +1711,6 @@ Killer:AddSwitch("Auto Kill", function(bool)
                     
                     if targetHumanoid and targetHumanoid.Health > 0 then
                         pcall(function()
-                            -- Instant Kill (5x fire)
                             for i = 1, 5 do 
                                 muscleEvent:FireServer("punch", "rightHand") 
                                 muscleEvent:FireServer("punch", "leftHand")
@@ -1721,7 +1720,6 @@ Killer:AddSwitch("Auto Kill", function(bool)
                 end
             end
             
-            -- Tinaasan sa 0.1 para maging stable at maiwasan ang pag-crash
             task.wait(0.1)
         end
         
