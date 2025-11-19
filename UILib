@@ -1711,11 +1711,12 @@ Killer:AddSwitch("Auto Kill", function(bool)
                     
                     if targetHumanoid and targetHumanoid.Health > 0 then
                         pcall(function()
-                            for i = 1, 5 do 
+                            for i = 1, 3 do 
                                 muscleEvent:FireServer("punch", "rightHand") 
                                 muscleEvent:FireServer("punch", "leftHand")
                             end
                         end)
+                        break
                     end
                 end
             end
