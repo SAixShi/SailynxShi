@@ -1183,8 +1183,8 @@ rebirthsFolder:AddTextBox("Rebirth Target", function(text)
         })
     else
         game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Entrada InvÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡lida",
-            Text = "Por favor ingresa un nÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âºmero vÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡lido mayor que 0",
+            Title = "FUCK YOU",
+            Text = "0",
             Duration = 0
         })
     end
@@ -1330,7 +1330,6 @@ local timeDropdown = AutoFarm:AddDropdown("Change Time", function(selection)
     end
 end)
 
--- ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦  NUEVA PESTAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“A: CALCULAR STATS
 local features = window:AddTab("Stats Farm")
 
 
@@ -1705,19 +1704,22 @@ Killer:AddSwitch("Auto Kill", function(bool)
                     if target ~= LocalPlayer and not playerWhitelist[target.Name] then
                         local targetChar = target.Character
                         local rootPart = targetChar and targetChar:FindFirstChild("HumanoidRootPart")
+                        
                         if rootPart then
                             pcall(function()
-                                firetouchinterest(rightHand, rootPart, 1)
-                                firetouchinterest(leftHand, rootPart, 1)
-                                firetouchinterest(rightHand, rootPart, 0)
-                                firetouchinterest(leftHand, rootPart, 0)
+                                for i = 1, 5 do 
+                                    firetouchinterest(rightHand, rootPart, 1)
+                                    firetouchinterest(leftHand, rootPart, 1)
+                                    firetouchinterest(rightHand, rootPart, 0)
+                                    firetouchinterest(leftHand, rootPart, 0)
+                                end
                             end)
                         end
                     end
                 end
             end
-
-            task.wait(0.003)
+            
+            task.wait(0.1) 
         end
     end)
 end)
@@ -1779,8 +1781,8 @@ Killer:AddSwitch("Start Kill Target", function(state)
                 punch.Parent = character
             end
 
-            local rightHand = character:WaitForChild("RightHand", 5)
-            local leftHand = character:WaitForChild("LeftHand", 5)
+            local rightHand = character:FindFirstChild("RightHand") 
+            local leftHand = character:FindFirstChild("LeftHand")
 
             if rightHand and leftHand then
                 for _, name in ipairs(targetPlayerNames) do
@@ -1789,17 +1791,19 @@ Killer:AddSwitch("Start Kill Target", function(state)
                         local rootPart = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
                         if rootPart then
                             pcall(function()
-                                firetouchinterest(rightHand, rootPart, 1)
-                                firetouchinterest(leftHand, rootPart, 1)
-                                firetouchinterest(rightHand, rootPart, 0)
-                                firetouchinterest(leftHand, rootPart, 0)
+                                for i = 1, 5 do 
+                                    firetouchinterest(rightHand, rootPart, 1)
+                                    firetouchinterest(leftHand, rootPart, 1)
+                                    firetouchinterest(rightHand, rootPart, 0)
+                                    firetouchinterest(leftHand, rootPart, 0)
+                                end
                             end)
                         end
                     end
                 end
             end
 
-            task.wait(0.003)
+            task.wait(0.1) 
         end
     end)
 end)
@@ -1852,55 +1856,39 @@ Killer:AddSwitch("View Player", function(bool)
     end)
 end)
                                                         
-Killer:AddSwitch("AutoHitNoAnim]", function(state)
+Killer:AddSwitch("AutoHitNoAnim", function(state)
 	autoPunchNoAnim = state
+	
 	task.spawn(function()
 		while autoPunchNoAnim do
-			local punch = LocalPlayer.Backpack:FindFirstChild("Punch") or LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Punch")
-			if punch then
-				if punch.Parent ~= LocalPlayer.Character then
-					punch.Parent = LocalPlayer.Character
-				end
-				LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
-				LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
-			else
-				autoPunchNoAnim = false
-			end
-			task.wait(0.003)
-		end
-	end)
-end)
-
-Killer:AddSwitch("Quick Hit", function(state)
-	_G.autoPunchActive = state
-	if state then
-		task.spawn(function()
-			while _G.autoPunchActive do
-				local punch = LocalPlayer.Backpack:FindFirstChild("Punch")
-				if punch then
-					punch.Parent = LocalPlayer.Character
-					if punch:FindFirstChild("attackTime") then
-						punch.attackTime.Value = 0
+			local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+			
+			local rightHand = character:FindFirstChild("RightHand") 
+			local leftHand = character:FindFirstChild("LeftHand")
+			
+			if rightHand and leftHand then
+				for _, target in ipairs(Players:GetPlayers()) do
+					if target ~= LocalPlayer and not playerWhitelist[target.Name] then
+						local targetChar = target.Character
+						local rootPart = targetChar and targetChar:FindFirstChild("HumanoidRootPart")
+						
+						if rootPart then
+							pcall(function()
+								for i = 1, 5 do 
+									firetouchinterest(rightHand, rootPart, 1)
+									firetouchinterest(leftHand, rootPart, 1)
+									firetouchinterest(rightHand, rootPart, 0)
+									firetouchinterest(leftHand, rootPart, 0)
+								end
+							end)
+						end
 					end
 				end
-				task.wait()
 			end
-		end)
-		task.spawn(function()
-			while _G.autoPunchActive do
-				local punch = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Punch")
-				if punch then
-					punch:Activate()
-				end
-				task.wait()
-			end
-		end)
-	else
-		local punch = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Punch")
-		if punch then
-			punch.Parent = LocalPlayer.Backpack
+
+			task.wait(0.05) 
 		end
-	end
+	end)
 end)
 
 
