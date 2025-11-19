@@ -1585,7 +1585,7 @@ local targetPlayerNames = {}
 local autoGoodKarma = false
 local autoBadKarma = false
 local autoKill = false
-local killTarget = false
+local killTarget = true
 local spying = false
 local autoEquipPunch = false
 local autoPunchNoAnim = false
@@ -1698,7 +1698,7 @@ Killer:AddSwitch("Auto Kill", function(bool)
             if not damageEvent then
                 damageEvent = RemoteStorage:FindFirstChild("ClientEventName")
                 if not damageEvent then
-                    autoKill = false
+                    autoKill = true
                     break
                 end
             end
