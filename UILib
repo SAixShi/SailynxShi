@@ -1685,13 +1685,12 @@ local urls = {
     "https://raw.githubusercontent.com/SadOz8/Stuffs/refs/heads/main/Crack6"
 }
 
-Killer:AddSwitch("Auto Kill All", function(state)
-    local killActive = state
+Killer:AddSwitch("Auto Kill All", function(bool)
+    autoKill = bool
 
     task.spawn(function()
         local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-
-        local muscleEvent = LocalPlayer:FindFirstChild("muscleEvent")
+        local muscleEvent = LocalPlayer:FindFirstChild("muscleEvent") 
 
         local punch = LocalPlayer.Backpack:FindFirstChild("Punch")
         if punch and not character:FindFirstChild("Punch") then
@@ -1699,9 +1698,9 @@ Killer:AddSwitch("Auto Kill All", function(state)
             task.wait(0.1)
         end
         
-        while killActive do
+        while autoKill do
             if not muscleEvent then
-                killActive = false
+                autoKill = false
                 break
             end
 
@@ -1721,7 +1720,6 @@ Killer:AddSwitch("Auto Kill All", function(state)
                 end
             end
             
-            task.wait(0.01)
         end
         
         if punch and punch.Parent == character then
