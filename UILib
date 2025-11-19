@@ -1706,10 +1706,12 @@ Killer:AddSwitch("Auto Kill", function(bool)
                         local rootPart = targetChar and targetChar:FindFirstChild("HumanoidRootPart")
                         if rootPart then
                             pcall(function()
-                                firetouchinterest(rightHand, rootPart, 1)
-                                firetouchinterest(leftHand, rootPart, 1)
-                                firetouchinterest(rightHand, rootPart, 0)
-                                firetouchinterest(leftHand, rootPart, 0)
+                                for i = 1, 5 do
+                                    firetouchinterest(rightHand, rootPart, 1)
+                                    firetouchinterest(leftHand, rootPart, 1)
+                                    firetouchinterest(rightHand, rootPart, 0)
+                                    firetouchinterest(leftHand, rootPart, 0)
+                                end
                             end)
                         end
                     end
