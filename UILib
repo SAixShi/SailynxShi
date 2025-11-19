@@ -1704,7 +1704,6 @@ Killer:AddSwitch("Auto Kill", function(bool)
                     if target ~= LocalPlayer and not playerWhitelist[target.Name] then
                         local targetChar = target.Character
                         local rootPart = targetChar and targetChar:FindFirstChild("HumanoidRootPart")
-                        
                         if rootPart then
                             pcall(function()
                                 for i = 1, 5 do 
@@ -1718,8 +1717,8 @@ Killer:AddSwitch("Auto Kill", function(bool)
                     end
                 end
             end
-            
-            task.wait(0.1) 
+
+            task.wait(0.1)
         end
     end)
 end)
@@ -1781,7 +1780,7 @@ Killer:AddSwitch("Start Kill Target", function(state)
                 punch.Parent = character
             end
 
-            local rightHand = character:FindFirstChild("RightHand") 
+            local rightHand = character:FindFirstChild("RightHand")
             local leftHand = character:FindFirstChild("LeftHand")
 
             if rightHand and leftHand then
@@ -1791,6 +1790,7 @@ Killer:AddSwitch("Start Kill Target", function(state)
                         local rootPart = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
                         if rootPart then
                             pcall(function()
+                                -- ULITIN NANG 5 BESES PARA INSTANT KILL
                                 for i = 1, 5 do 
                                     firetouchinterest(rightHand, rootPart, 1)
                                     firetouchinterest(leftHand, rootPart, 1)
@@ -1874,14 +1874,13 @@ Killer:AddSwitch("AutoHitNoAnim", function(state)
 						
 						if rootPart then
 							pcall(function()
-								for i = 1, 5 do 
-									firetouchinterest(rightHand, rootPart, 1)
-									firetouchinterest(leftHand, rootPart, 1)
-									firetouchinterest(rightHand, rootPart, 0)
-									firetouchinterest(leftHand, rootPart, 0)
-								end
+								firetouchinterest(rightHand, rootPart, 1)
+								firetouchinterest(leftHand, rootPart, 1)
+								firetouchinterest(rightHand, rootPart, 0)
+								firetouchinterest(leftHand, rootPart, 0)
 							end)
 						end
+                        break
 					end
 				end
 			end
