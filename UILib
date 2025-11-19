@@ -1685,7 +1685,7 @@ local urls = {
     "https://raw.githubusercontent.com/SadOz8/Stuffs/refs/heads/main/Crack6"
 }
 
-Killer:AddSwitch("Auto Kill All", function(bool)
+Killer:AddSwitch("Auto Kill", function(bool)
     autoKill = bool
 
     task.spawn(function()
@@ -1711,6 +1711,7 @@ Killer:AddSwitch("Auto Kill All", function(bool)
                     
                     if targetHumanoid and targetHumanoid.Health > 0 then
                         pcall(function()
+                            -- Instant Kill (5x fire)
                             for i = 1, 5 do 
                                 muscleEvent:FireServer("punch", "rightHand") 
                                 muscleEvent:FireServer("punch", "leftHand")
@@ -1720,6 +1721,7 @@ Killer:AddSwitch("Auto Kill All", function(bool)
                 end
             end
             
+            task.wait(0.05)
         end
         
         if punch and punch.Parent == character then
