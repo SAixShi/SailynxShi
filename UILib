@@ -1721,7 +1721,8 @@ Killer:AddSwitch("Auto Kill", function(bool)
                 end
             end
             
-            task.wait(0.05)
+            -- Tinaasan sa 0.1 para maging stable at maiwasan ang pag-crash
+            task.wait(0.1)
         end
         
         if punch and punch.Parent == character then
