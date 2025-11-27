@@ -2486,9 +2486,14 @@ teleport:AddButton("Brawl Regular", function()
 end)
 
 
- local pets = window:AddTab("Crystals")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+ local library = window
+
 local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local pets = library:AddTab("Crystals")
+local Evolve = library:AddTab("Evolve")
 
 local AutoBuyStatus = {}
 
@@ -2525,7 +2530,7 @@ local function startAutoBuy(petName)
                 ReplicatedStorage.cPetShopRemote:InvokeServer(petToBuy)
                 print("Bought pet: " .. petName)
             else
-                print("⚠️ Pet not found in cPetShopFolder: " .. petName)
+                print("Pet not found in cPetShopFolder: " .. petName)
             end
             task.wait(0.1)
         end
@@ -2539,7 +2544,7 @@ local function stopAutoBuy()
     end
 end
 
-pets:AddLabel("=== Direct Auto Buy ===")
+pets:AddLabel("===Auto Buy ===")
 
 pets:AddButton("⚡ Start Auto Buy: Neon Guardian", function()
     startAutoBuy("Neon Guardian")
@@ -2566,6 +2571,54 @@ task.spawn(function()
     end
 end)
 
+local evolveRemote = ReplicatedStorage.rEvents:FindFirstChild("evolvePetRemote") 
+local selectedRarity = "Unique" 
+
+Evolve:AddLabel("=== Auto Pet Evolution ===").TextSize = 22
+
+local evolveSwitch = Evolve:AddSwitch("🧬Auto Evolve  Pets", function(bool)
+    _G.AutoEvolve = bool
+    
+    if bool then
+        if not evolveRemote then
+            print("ERROR: evolvePetRemote not found! Cannot start auto evolve.")
+            _G.AutoEvolve = false
+            return
+        end
+        
+        print("🧬Auto Evolve")
+        
+        spawn(function()
+            while _G.AutoEvolve do
+                local petFolder = LocalPlayer.petsFolder:FindFirstChild(selectedRarity)
+                
+                if petFolder and #petFolder:GetChildren() >= 3 then 
+                    
+                    local pet1 = petFolder:GetChildren()[1]
+                    local pet2 = petFolder:GetChildren()[2]
+                    local pet3 = petFolder:GetChildren()[3]
+                    
+                    if pet1 and pet2 and pet3 then
+                        evolveRemote:InvokeServer(pet1, pet2, pet3)
+                        print("Evolved 3x Unique pets.")
+                    end
+                end
+                
+                task.wait(1.5) 
+            end
+        end)
+    else
+        print("Auto Evolve STOPPED.")
+    end
+end)
+
+Evolve:AddButton("Test Remote Existence", function()
+    if evolveRemote then
+        print("evolvePetRemote found at: " .. evolveRemote:GetFullName())
+    else
+        print("evolvePetRemote")
+    end
+end)
 
 
 
