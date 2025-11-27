@@ -2494,10 +2494,12 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local PetsTab = library:AddTab("Crystals")
 
-local AutoBuyStatus = {}
-local AutoEvolveStatus = {running = false, petName = "Neon Guardian"}
-
+local AutoBuyStatus = {running = false, petName = nil}
 local evolveRemote = ReplicatedStorage.rEvents:FindFirstChild("evolvePetRemote") 
+
+local EvolveLoopConnection = nil
+local EvolveEnabled = false
+local AutoEvolvePetName = "Neon Guardian"
 
 local function findCrystalForItem(itemName)
     if itemName == "Darkstar Hunter" then
@@ -2508,18 +2510,67 @@ local function findCrystalForItem(itemName)
     return nil
 end
 
-local function getRarityFolder(petName)
-    if petName == "Darkstar Hunter" or petName == "Neon Guardian" then
-        return "Unique" 
+local function getPetFolder(petName)
+    local folders = {"Unique", "Legendary", "Rare", "Basic", "Advanced"}
+    local petsFolder = LocalPlayer.petsFolder
+    
+    for _, rank in ipairs(folders) do
+        local folder = petsFolder:FindFirstChild(rank)
+        if folder and folder:FindFirstChild(petName) then
+            return rank
+        end
     end
     return "Unique"
 end
 
-local function startAutoBuy(petName)
-    if AutoBuyStatus.running then
-        AutoBuyStatus.running = false
-        task.wait(0.1)
+local function evolveThreePets(petName)
+    if not evolveRemote then
+        return false
     end
+
+    local rarity = getPetFolder(petName)
+    local petFolder = LocalPlayer.petsFolder:FindFirstChild(rarity)
+    
+    if petFolder then
+        local petsToEvolve = {}
+        for _, pet in ipairs(petFolder:GetChildren()) do
+            if pet.Name == petName then
+                table.insert(petsToEvolve, pet)
+            end
+        end
+
+        if #petsToEvolve >= 3 then 
+            local pet1 = petsToEvolve[1]
+            local pet2 = petsToEvolve[2]
+            local pet3 = petsToEvolve[3]
+            
+            evolveRemote:InvokeServer(pet1, pet2, pet3)
+            return true
+        end
+    end
+    return false
+end
+
+local function startAutoEvolve(petName)
+    if EvolveLoopConnection then return end 
+    if not evolveRemote then return end
+
+    EvolveEnabled = true
+    EvolveLoopConnection = task.spawn(function()
+        while EvolveEnabled and AutoBuyStatus.running do
+            evolveThreePets(petName)
+            task.wait(0.5)
+        end
+        EvolveLoopConnection = nil
+    end)
+end
+
+local function stopAutoEvolve()
+    EvolveEnabled = false
+end
+
+local function startAutoBuy(petName)
+    stopAutoBuy()
     
     local crystal = findCrystalForItem(petName)
     if not crystal then
@@ -2528,6 +2579,10 @@ local function startAutoBuy(petName)
     
     AutoBuyStatus.running = true
     AutoBuyStatus.petName = petName
+    
+    if EvolveEnabled then
+        startAutoEvolve(petName)
+    end
     
     spawn(function()
         while AutoBuyStatus.running and AutoBuyStatus.petName == petName do
@@ -2544,6 +2599,7 @@ local function stopAutoBuy()
     if AutoBuyStatus.running then
         AutoBuyStatus.running = false
     end
+    stopAutoEvolve()
 end
 
 PetsTab:AddLabel("Auto Buy").TextSize = 22
@@ -2564,12 +2620,12 @@ local statusLabel = PetsTab:AddLabel("Status: Ready")
 
 task.spawn(function()
     while task.wait(0.1) do
-        if AutoBuyStatus.running and AutoEvolveStatus.running then
+        if AutoBuyStatus.running and EvolveEnabled then
             statusLabel.Text = "Status: Buying & Evolving " .. AutoBuyStatus.petName .. "..."
         elseif AutoBuyStatus.running then
             statusLabel.Text = "Status: Buying " .. AutoBuyStatus.petName .. "..."
-        elseif AutoEvolveStatus.running then
-            statusLabel.Text = "Status: Evolving " .. AutoEvolveStatus.petName .. "..."
+        elseif EvolveEnabled then
+            statusLabel.Text = "Status: Evolving " .. AutoBuyStatus.petName .. "..."
         else
             statusLabel.Text = "Status: Idle (Ready)"
         end
@@ -2580,56 +2636,24 @@ PetsTab:AddLabel("")
 
 PetsTab:AddLabel("Auto Evolve").TextSize = 22
 
-local evolvePetDropdown = PetsTab:AddDropdown("Select Pet to Auto Evolve", function(text)
-    AutoEvolveStatus.petName = text
+local evolvePetDropdown = PetsTab:AddDropdown("Select Evolve", function(text)
+    AutoEvolvePetName = text
 end)
 evolvePetDropdown:Add("Neon Guardian")
 evolvePetDropdown:Add("Darkstar Hunter")
 
-local evolveSwitch = PetsTab:AddSwitch("Start Auto Evolve", function(bool)
-    AutoEvolveStatus.running = bool
-    
-    if bool then
-        if not evolveRemote then
-            AutoEvolveStatus.running = false
-            return
-        end
-        
-        spawn(function()
-            while AutoEvolveStatus.running do
-                local petName = AutoEvolveStatus.petName
-                local rarity = getRarityFolder(petName)
-                local petFolder = LocalPlayer.petsFolder:FindFirstChild(rarity)
-                
-                if petFolder then
-                    local petsToEvolve = {}
-                    for _, pet in ipairs(petFolder:GetChildren()) do
-                        if pet.Name == petName then
-                            table.insert(petsToEvolve, pet)
-                        end
-                    end
-
-                    if #petsToEvolve >= 3 then 
-                        local pet1 = petsToEvolve[1]
-                        local pet2 = petsToEvolve[2]
-                        local pet3 = petsToEvolve[3]
-                        
-                        evolveRemote:InvokeServer(pet1, pet2, pet3)
-                    end
-                end
-                
-                task.wait(1.5) 
-            end
-        end)
+local evolveSwitch = PetsTab:AddSwitch("Enable Auto Evolve (Linked to Buy)", function(bool)
+    EvolveEnabled = bool
+    if bool and AutoBuyStatus.running then
+        startAutoEvolve(AutoBuyStatus.petName)
+    end
+    if not bool then
+        stopAutoEvolve()
     end
 end)
 
-PetsTab:AddButton("(Evolve)", function()
-    if evolveRemote then
-        print("Evolve remote found.")
-    else
-        print("Evolve remote NOT found.")
-    end
+PetsTab:AddButton("Evolve", function()
+    evolveThreePets(AutoEvolvePetName)
 end)
 
 
