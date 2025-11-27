@@ -2569,6 +2569,7 @@ end)
 
 
 
+
 local Gift = window:AddTab("Gift")
 Gift:AddLabel("Gifting Protein egg:").TextSize = 22
 
