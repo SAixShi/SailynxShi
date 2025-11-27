@@ -2492,10 +2492,12 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local pets = library:AddTab("Crystals")
-local Evolve = library:AddTab("Evolve")
+local PetsTab = library:AddTab("Crystals")
 
 local AutoBuyStatus = {}
+local AutoEvolveStatus = {running = false, petName = "Neon Guardian"}
+
+local evolveRemote = ReplicatedStorage.rEvents:FindFirstChild("evolvePetRemote") 
 
 local function findCrystalForItem(itemName)
     if itemName == "Darkstar Hunter" then
@@ -2506,6 +2508,13 @@ local function findCrystalForItem(itemName)
     return nil
 end
 
+local function getRarityFolder(petName)
+    if petName == "Darkstar Hunter" or petName == "Neon Guardian" then
+        return "Unique" 
+    end
+    return "Unique"
+end
+
 local function startAutoBuy(petName)
     if AutoBuyStatus.running then
         AutoBuyStatus.running = false
@@ -2514,27 +2523,20 @@ local function startAutoBuy(petName)
     
     local crystal = findCrystalForItem(petName)
     if not crystal then
-        print("Could not find crystal for pet: " .. petName)
         return
     end
     
     AutoBuyStatus.running = true
     AutoBuyStatus.petName = petName
     
-    print("Auto buy STARTED for: " .. petName .. " from " .. crystal)
-    
     spawn(function()
         while AutoBuyStatus.running and AutoBuyStatus.petName == petName do
             local petToBuy = ReplicatedStorage.cPetShopFolder:FindFirstChild(petName)
             if petToBuy then
                 ReplicatedStorage.cPetShopRemote:InvokeServer(petToBuy)
-                print("Bought pet: " .. petName)
-            else
-                print("Pet not found in cPetShopFolder: " .. petName)
             end
-            task.wait(0.1)
+            task.wait(0.05) 
         end
-        print("Auto buy STOPPED for: " .. petName)
     end)
 end
 
@@ -2544,79 +2546,89 @@ local function stopAutoBuy()
     end
 end
 
-pets:AddLabel("===Auto Buy ===")
+PetsTab:AddLabel("Auto Buy").TextSize = 22
 
-pets:AddButton("⚡ Start Auto Buy: Neon Guardian", function()
+PetsTab:AddButton("⚡ Start Auto Buy: Neon Guardian", function()
     startAutoBuy("Neon Guardian")
 end)
 
-pets:AddButton("🌑 Start Auto Buy: Darkstar Hunter", function()
+PetsTab:AddButton("🌑 Start Auto Buy: Darkstar Hunter", function()
     startAutoBuy("Darkstar Hunter")
 end)
 
-pets:AddButton("🛑 STOP Auto Buy", function()
+PetsTab:AddButton("🛑 STOP Auto Buy", function()
     stopAutoBuy()
 end)
 
-pets:AddLabel("=== Status ===")
-local statusLabel = pets:AddLabel("Status: Ready")
+local statusLabel = PetsTab:AddLabel("Status: Ready")
 
 task.spawn(function()
     while task.wait(0.1) do
-        if AutoBuyStatus.running then
+        if AutoBuyStatus.running and AutoEvolveStatus.running then
+            statusLabel.Text = "Status: Buying & Evolving " .. AutoBuyStatus.petName .. "..."
+        elseif AutoBuyStatus.running then
             statusLabel.Text = "Status: Buying " .. AutoBuyStatus.petName .. "..."
+        elseif AutoEvolveStatus.running then
+            statusLabel.Text = "Status: Evolving " .. AutoEvolveStatus.petName .. "..."
         else
             statusLabel.Text = "Status: Idle (Ready)"
         end
     end
 end)
 
-local evolveRemote = ReplicatedStorage.rEvents:FindFirstChild("evolvePetRemote") 
-local selectedRarity = "Unique" 
+PetsTab:AddLabel("")
 
-Evolve:AddLabel("=== Auto Pet Evolution ===").TextSize = 22
+PetsTab:AddLabel("Auto Evolve").TextSize = 22
 
-local evolveSwitch = Evolve:AddSwitch("🧬Auto Evolve  Pets", function(bool)
-    _G.AutoEvolve = bool
+local evolvePetDropdown = PetsTab:AddDropdown("Select Pet to Auto Evolve", function(text)
+    AutoEvolveStatus.petName = text
+end)
+evolvePetDropdown:Add("Neon Guardian")
+evolvePetDropdown:Add("Darkstar Hunter")
+
+local evolveSwitch = PetsTab:AddSwitch("Start Auto Evolve", function(bool)
+    AutoEvolveStatus.running = bool
     
     if bool then
         if not evolveRemote then
-            print("ERROR: evolvePetRemote not found! Cannot start auto evolve.")
-            _G.AutoEvolve = false
+            AutoEvolveStatus.running = false
             return
         end
         
-        print("🧬Auto Evolve")
-        
         spawn(function()
-            while _G.AutoEvolve do
-                local petFolder = LocalPlayer.petsFolder:FindFirstChild(selectedRarity)
+            while AutoEvolveStatus.running do
+                local petName = AutoEvolveStatus.petName
+                local rarity = getRarityFolder(petName)
+                local petFolder = LocalPlayer.petsFolder:FindFirstChild(rarity)
                 
-                if petFolder and #petFolder:GetChildren() >= 3 then 
-                    
-                    local pet1 = petFolder:GetChildren()[1]
-                    local pet2 = petFolder:GetChildren()[2]
-                    local pet3 = petFolder:GetChildren()[3]
-                    
-                    if pet1 and pet2 and pet3 then
+                if petFolder then
+                    local petsToEvolve = {}
+                    for _, pet in ipairs(petFolder:GetChildren()) do
+                        if pet.Name == petName then
+                            table.insert(petsToEvolve, pet)
+                        end
+                    end
+
+                    if #petsToEvolve >= 3 then 
+                        local pet1 = petsToEvolve[1]
+                        local pet2 = petsToEvolve[2]
+                        local pet3 = petsToEvolve[3]
+                        
                         evolveRemote:InvokeServer(pet1, pet2, pet3)
-                        print("Evolved 3x Unique pets.")
                     end
                 end
                 
                 task.wait(1.5) 
             end
         end)
-    else
-        print("Auto Evolve STOPPED.")
     end
 end)
 
-Evolve:AddButton("Test Remote Existence", function()
+PetsTab:AddButton("(Evolve)", function()
     if evolveRemote then
-        print("evolvePetRemote found at: " .. evolveRemote:GetFullName())
+        print("Evolve remote found.")
     else
-        print("evolvePetRemote")
+        print("Evolve remote NOT found.")
     end
 end)
 
