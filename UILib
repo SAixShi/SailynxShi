@@ -1597,8 +1597,7 @@ FolderDurabilidad:AddButton("Calculate Durability", function()
     end
 end)
 
-KillingTab:AddLabel("Kills").TextSize = 22
-
+local KillingTab = window:AddTab("Kills")
 
 local dropdown = KillingTab:AddDropdown("Select Pet", function(text)
     local petsFolder = game.Players.LocalPlayer.petsFolder
